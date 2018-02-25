@@ -18,7 +18,13 @@ export class YargsParser {
       keepRange: {
         alias: 'k',
         default: true,
-        description: 'Whether the range comparators are kept',
+        description: 'Keep range comparators',
+        type: 'boolean',
+      },
+      logger: {
+        alias: 'l',
+        default: false,
+        description: 'Use the built-in logger',
         type: 'boolean',
       },
       policy: {
@@ -60,6 +66,7 @@ export class YargsParser {
       command: pargs._[0],
       filePath: pargs.filePath,
       keepRange: pargs.keepRange,
+      logger: pargs.logger,
       policy: pargs.policy,
       registry: pargs.registry,
     };
