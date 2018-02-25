@@ -16,7 +16,7 @@ class NPDU {
 
   private async _init() {
     const logger = new Logger();
-    const pargs = new YargsParser().parse();
+    const pargs = new YargsParser(logger).parse();
     const spinner = logger.spinnerLogStart('Updating dependencies...');
     logger.log('');
     try {
