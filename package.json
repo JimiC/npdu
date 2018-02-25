@@ -34,15 +34,20 @@
     ],
     "scripts": {
         "start": "node ./lib/cli.js",
-        "build": "npm run lint && npm run test",
+        "prebuild:dev": "npm run prebuild",
+        "build:dev": "npm run test",
+        "precompile:dev": "npm run precompile",
+        "compile:dev": "tsc -p tsconfig.dev.json",
+        "compile:w": "npm run compile:dev -- -w",
+        "prebuild": "npm run lint",
+        "build": "npm run compile",
         "precompile": "rimraf ./out",
         "compile": "tsc",
-        "compile:w": "npm run compile -- -w",
         "lint": "tslint -p .",
-        "pretest": "rimraf ./.nyc_output ./coverage && npm run compile",
+        "pretest": "rimraf ./.nyc_output ./coverage && npm run compile:dev",
         "test": "nyc -c -x '' mocha ./out/test --recursive",
         "posttest": "nyc report -r lcov",
-        "prepublishOnly": "rimraf ./lib && npm run build && ncp out/src lib"
+        "prepare": "rimraf ./lib && npm run build && cpx 'out/src/**/*' lib"
     },
     "dependencies": {
         "semver": "^5.5.0",
@@ -51,7 +56,7 @@
     "devDependencies": {
         "chai": "^4.1.2",
         "codecov": "^3.0.0",
-        "ncp": "^2.0.0",
+        "cpx": "^1.5.0",
         "mocha": "^5.0.1",
         "nyc": "^11.4.1",
         "rimraf": "^2.6.2",

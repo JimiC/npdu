@@ -12,7 +12,7 @@
             "args": [
               "all"
             ],
-            "preLaunchTask": "tsc: build - tsconfig.json",
+            "preLaunchTask": "tsc: build - tsconfig.dev.json",
             "stopOnEntry": false,
             "sourceMaps": true,
             "outFiles": [
