@@ -16,20 +16,20 @@ class NPDU {
 
   private async _init() {
     const logger = new Logger();
-    const pargs = new YargsParser(logger).parse();
+    const pargs = new YargsParser().parse();
     const spinner = logger.spinnerLogStart('Updating dependencies...');
     logger.log('');
     try {
       const document = fs.readFileSync(pargs.filePath, 'utf8');
-      const pfm = new PackageFileManager(document, logger);
+      const pfm = new PackageFileManager(document);
       const depFlag = this._getDependenciesFlag(pargs.command);
       const dependencies: IPackageDependencies = pfm.getDependencies(depFlag);
-      const rm = new RegistryManager(pargs.registry, logger);
+      const rm = new RegistryManager(pargs.registry);
       const options: IResolverOptions = {
         keepRange: pargs.keepRange,
         policy: pargs.policy,
       };
-      const vr = new VersionResolver(options, rm, logger);
+      const vr = new VersionResolver(options, rm);
       const resolvedDependencies: IPackageDependencies = await vr.resolve(dependencies);
       await pfm.persist(resolvedDependencies);
 

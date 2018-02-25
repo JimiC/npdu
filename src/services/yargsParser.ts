@@ -1,3 +1,4 @@
+import fs from 'fs';
 import y = require('yargs');
 import { BaseLogger } from '../abstractions';
 import { IParsedArgs } from '../interfaces';
@@ -65,15 +66,19 @@ export class YargsParser {
   }
 
   private validate(pargs: y.Arguments): boolean {
-    if (pargs.registry) {
-      const regex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g;
-      if (!regex.test(pargs.registry)) {
-        y.showHelp();
-        if (this._logger) {
-          this._logger.error(`Invalid argument: 'registry'`);
-        }
-        process.exit(1);
+    let errorMsg: string;
+    const regex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g;
+    if (!regex.test(pargs.registry)) {
+      errorMsg = 'Invalid argument: \'registry\'';
+    }
+    if (!fs.existsSync(pargs.filePath)) {
+      errorMsg = `File not found: '${pargs.filePath}'`;
+    }
+    if (errorMsg) {
+      if (this._logger) {
+        this._logger.error(errorMsg);
       }
+      throw new Error(errorMsg);
     }
     return true;
   }
