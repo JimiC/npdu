@@ -1,5 +1,5 @@
 {
-    "name": "node-pack-dep-upd",
+    "name": "npdu",
     "version": "0.0.0",
     "description": "Update your Node.js package dependencies (SemVer compliant)",
     "license": "MIT",
