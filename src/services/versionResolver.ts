@@ -18,53 +18,75 @@ export class VersionResolver extends BaseVersionResolver {
   }
 
   public async resolve(dependencies: IPackageDependencies): Promise<IPackageDependencies> {
-    if (this._logger) {
-      this._logger.updateLog('Resolving versions');
+    const packages = this._getAggregatedDependencies(dependencies);
+    for (const packageName in packages) {
+      if (!Reflect.has(packages, packageName)) { continue; }
+      if (this._logger) {
+        this._logger.updateLog(`Resolving version of package: '${packageName}'`);
+      }
+      const currentVersion = packages[packageName];
+      const newVersion = await this._findNewVersion(packageName, this._options.policy, currentVersion);
+      if (newVersion && currentVersion !== newVersion) {
+        const depends = this._getDependenciesOfPackage(dependencies, packageName);
+        depends[packageName] = newVersion;
+        if (this._logger) {
+          this._logger.updateLog(`Found new version: '${newVersion}' for package: '${packageName}'`);
+        }
+      } else {
+        if (this._logger) {
+          this._logger.updateLog(`Package: '${packageName}' is already up-to-date (${this._options.policy})`);
+        }
+      }
     }
-    const depends = this._getAggregatedDependencies(dependencies);
-    for (const dep in depends) {
-      if (!Reflect.has(depends, dep)) { continue; }
-      depends[dep] = await this._findVersion(dep, this._options.policy, depends[dep]);
-    }
-
     return Promise.resolve(dependencies);
   }
 
-  private async _findVersion(packageName: string, policy: string, defaultVersion: string): Promise<string> {
+  private _getAggregatedDependencies(dependencies: IPackageDependencies): IDependencies {
+    return Reflect.ownKeys(dependencies)
+      .map<IDependencies>(key => dependencies[key])
+      .reduce((p: IDependencies, c: IDependencies) => ({ ...p, ...c }), {});
+  }
+
+  private async _findNewVersion(packageName: string, policy: string, currentVersion: string): Promise<string> {
     const info: INodePackage = await this._registryManager.getPackageInfo(packageName);
-    return this._getVersionFromPolicy(info, policy, defaultVersion);
+    if (!info) {
+      if (this._logger) {
+        this._logger.updateLog(`Unable to get package info of '${packageName}' from registry`);
+      }
+      return null;
+    }
+    return this._getVersionFromPolicy(info, policy, currentVersion);
   }
 
-  private _getMaxSatisfiedVersion(info: INodePackage, defaultVersion: string): string {
-    const aggregator = Reflect.ownKeys(info.versions).reduce((p: string[], c: string) => p.concat(c), []);
-    const maxVersion = semver.maxSatisfying(aggregator, defaultVersion);
-    return info.versions ? maxVersion || defaultVersion : defaultVersion;
-  }
-
-  private _getRange(newVersion: string, defaultVersion: string): string {
-    if (!newVersion || !this._options.keepRange) { return defaultVersion; }
-
-    // TODO: Implement other range cases
-    return defaultVersion.replace(/[0-9.]+-*[a-zA-Z0-9]*/g, newVersion);
-  }
-
-  private _getVersionFromPolicy(info: INodePackage, policy: string, defaultVersion: string): string {
+  private _getVersionFromPolicy(info: INodePackage, policy: string, currentVersion: string): string {
     switch (Policy[policy]) {
       case Policy.latest:
         return info['dist-tags']
-          ? this._getRange(info['dist-tags'].latest, defaultVersion)
-          : defaultVersion;
+          ? this._getRange(info['dist-tags'].latest, currentVersion)
+          : currentVersion;
       case Policy.semver:
-        return this._getMaxSatisfiedVersion(info, defaultVersion);
+        const newVersion = this._getMaxSatisfiedVersion(info, currentVersion);
+        return this._getRange(newVersion, currentVersion);
       default:
         throw new Error('Not Implemented');
     }
   }
 
-  private _getAggregatedDependencies(dependencies: IPackageDependencies): IDependencies {
+  private _getRange(newVersion: string, currentVersion: string): string {
+    if (!newVersion) { return currentVersion; }
+    if (!this._options.keepRange) { return newVersion; }
+    // TODO: Implement other range cases
+    return currentVersion.replace(/[0-9.]+-*[a-zA-Z0-9]*/g, newVersion);
+  }
+
+  private _getMaxSatisfiedVersion(info: INodePackage, range: string): string {
+    const aggregator = Reflect.ownKeys(info.versions || {}).reduce((p: string[], c: string) => p.concat(c), []);
+    return semver.maxSatisfying(aggregator, range);
+  }
+
+  private _getDependenciesOfPackage(dependencies: IPackageDependencies, packageName: string): IDependencies {
     return Reflect.ownKeys(dependencies)
-      .filter(key => dependencies[key])
       .map<IDependencies>(key => dependencies[key])
-      .reduce((p: IDependencies, c: IDependencies) => ({ ...p, ...c }), {});
+      .find(obj => Reflect.has(obj, packageName));
   }
 }
