@@ -34,7 +34,7 @@
     "lib"
   ],
   "scripts": {
-    "start": "node ./lib/cli.js",
+    "start": "node ./out/src/cli.js",
     "prebuild:dev": "npm run prebuild",
     "build:dev": "npm run test",
     "precompile:dev": "npm run precompile",
