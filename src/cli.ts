@@ -1,3 +1,3 @@
 #!/usr/bin/env node
-import { npdu } from './npdu';
-npdu();
+// tslint:disable-next-line:no-var-requires
+require('./npdu');

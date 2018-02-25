@@ -20,16 +20,17 @@ class NPDU {
     const spinner = logger.spinnerLogStart('Updating dependencies...');
     logger.log('');
     try {
+      const _logger = pargs.logger ? logger : null;
       const document = fs.readFileSync(pargs.filePath, 'utf8');
-      const pfm = new PackageFileManager(document);
+      const pfm = new PackageFileManager(document, _logger);
       const depFlag = this._getDependenciesFlag(pargs.command);
       const dependencies: IPackageDependencies = pfm.getDependencies(depFlag);
-      const rm = new RegistryManager(pargs.registry);
+      const rm = new RegistryManager(pargs.registry, _logger);
       const options: IResolverOptions = {
         keepRange: pargs.keepRange,
         policy: pargs.policy,
       };
-      const vr = new VersionResolver(options, rm);
+      const vr = new VersionResolver(options, rm, _logger);
       const resolvedDependencies: IPackageDependencies = await vr.resolve(dependencies);
       await pfm.persist(resolvedDependencies);
 
@@ -58,4 +59,4 @@ class NPDU {
   }
 }
 
-export const npdu = () => new NPDU();
+export const npdu = new NPDU();
