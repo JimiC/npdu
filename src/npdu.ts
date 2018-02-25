@@ -18,9 +18,9 @@ class NPDU {
     const logger = new Logger();
     const pargs = new YargsParser(logger).parse();
     const spinner = logger.spinnerLogStart('Updating dependencies...');
-    logger.log('');
     try {
       const _logger = pargs.logger ? logger : null;
+      if (_logger) { logger.log(''); }
       const document = fs.readFileSync(pargs.filePath, 'utf8');
       const pfm = new PackageFileManager(document, _logger);
       const depFlag = this._getDependenciesFlag(pargs.command);
@@ -34,12 +34,11 @@ class NPDU {
       const resolvedDependencies: IPackageDependencies = await vr.resolve(dependencies);
       await pfm.persist(resolvedDependencies);
 
-      logger.updateLog('');
       logger.spinnerLogStop(spinner, 'Dependencies updated');
+      if (_logger) { logger.updateLog(''); }
     } catch (error) {
-      logger.updateLog('');
       logger.spinnerLogStop(spinner, 'NPDU failed to update the dependencies');
-      logger.error(error.stack || error.message || error);
+      logger.updateLog(`Error: ${error.message || error}`);
     }
   }
 

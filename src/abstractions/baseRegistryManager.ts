@@ -19,17 +19,32 @@ export abstract class BaseRegistryManager {
       this._logger.updateLog(`Getting package info of '${packageName}' from registry`);
     }
     const _protocol = require(this._registryUrl.protocol.slice(0, -1));
-    const onResponce = (responce: http.IncomingMessage, res, rej) => {
+    const onResponce = (
+      responce: http.IncomingMessage,
+      res: (value?: INodePackage | PromiseLike<INodePackage>) => void,
+      rej: (reason?: any) => void) => {
       if (responce.statusCode && responce.statusMessage !== http.STATUS_CODES[200]) {
         return rej(new Error(responce.statusMessage));
       }
-      let data = '';
+      let data: any = '';
       responce
         .on('error', error => rej(error))
         .on('data', (chunk: any) => data += chunk)
-        .on('end', _ => res(JSON.parse(data))).setEncoding('utf8');
+        .on('end', _ => {
+          if (!responce.headers['content-type'].includes('application/json')) {
+            return rej(new Error('Registry returned incompatible data'));
+          }
+          data = data instanceof Buffer
+            ? JSON.parse(data.toString())
+            : typeof data === 'string'
+              ? JSON.parse(data)
+              : data;
+          return res(data);
+        }).setEncoding('utf8');
     };
-    return new Promise<INodePackage>((res, rej) =>
+    return new Promise<INodePackage>((
+      res: (value?: INodePackage | PromiseLike<INodePackage>) => void,
+      rej: (reason?: any) => void) =>
       _protocol
         .get(_address, responce => onResponce(responce, res, rej))
         .on('error', error => rej(error)));
