@@ -7,7 +7,7 @@
     "name": "Jimi (Dimitris) Charalampidis",
     "email": "jimikar@gmail.com"
   },
-  "repository": "JimiC/node-pack-dep-upd",
+  "repository": "JimiC/npdu",
   "engines": {
     "node": ">=6.5.0"
   },
@@ -47,7 +47,7 @@
     "pretest": "rimraf ./.nyc_output ./coverage && npm run compile:dev",
     "test": "nyc -c -x '' mocha ./out/test --recursive",
     "posttest": "nyc report -r lcov",
-    "prepare": "rimraf ./lib && npm run build && cpx 'out/src/**/*' lib"
+    "prepublichOnly": "rimraf ./lib && npm run build && cpx 'out/src/**/*' lib"
   },
   "dependencies": {
     "semver": "^5.5.0",
