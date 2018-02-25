@@ -48,7 +48,8 @@
     "pretest": "rimraf ./.nyc_output ./coverage && npm run compile:dev",
     "test": "nyc -c -x '' mocha ./out/test --recursive",
     "posttest": "nyc report -r lcov",
-    "prepublichOnly": "rimraf ./lib && npm run build && cpx 'out/src/**/*' lib"
+    "preversion": "npm t",
+    "prepublishOnly": "rimraf ./lib && npm run build && cpx 'out/src/**/*' lib"
   },
   "dependencies": {
     "semver": "^5.5.0",
