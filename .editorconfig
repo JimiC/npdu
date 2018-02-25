@@ -10,6 +10,3 @@ indent_size = 2
 
 [*.{svg,gif,png,jpg,jpeg}]
 insert_final_newline = false
-
-[package.json]
-indent_size = 4
