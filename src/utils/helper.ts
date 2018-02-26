@@ -11,12 +11,18 @@ export const isNullOrUndefind = (obj: any, ...args: any[]): boolean => {
   return _isNullOrUndefind;
 };
 
-export const readFileAsync = (path, opts = 'utf8'): Promise<string> => {
-  return new Promise((res, rej) => fs.readFile(path, opts, (err, data) => err ? rej(err) : res(data)));
+export const readFileAsync = (path: string, encoding = 'utf8'): Promise<string> => {
+  return new Promise((res, rej) => fs.readFile(path, encoding, (err, data) => err ? rej(err) : res(data)));
 };
 
-export const writeFileAsync = (path, data): Promise<void> => {
+export const writeFileAsync = (path: string, data: any): Promise<void> => {
   return new Promise((res, rej) => fs.writeFile(path, data, err => err ? rej(err) : res()));
+};
+
+export const getFinalNewLine = (text: string): { has: boolean, type: string } => {
+  const regex = /(?:\r?\n)/g;
+  const EOL = (text.match(regex) || [])[0];
+  return { has: !!EOL, type: EOL || '' };
 };
 
 // Taken from <https://github.com/sindresorhus/detect-indent>

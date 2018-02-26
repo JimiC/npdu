@@ -1,13 +1,22 @@
 import { BaseLogger, BasePackageFileManager } from '../abstractions';
 import { DependenciesFlags } from '../common/enumerations';
 import { IDependencies, IPackageDependencies } from '../interfaces';
-import { getIndentation, readFileAsync, writeFileAsync } from '../utils';
+import {
+  getFinalNewLine,
+  getIndentation,
+  readFileAsync,
+  writeFileAsync,
+} from '../utils';
 
 export class PackageFileManager extends BasePackageFileManager {
 
-  private _packageFileContent: any;
+  private _packageFileContent: IPackageDependencies;
   private _indentation: any;
   private _filePath: string;
+  private _finalNewLine: {
+    has: boolean;
+    type: string;
+  };
 
   constructor(path?: string, logger?: BaseLogger) {
     super(logger);
@@ -46,6 +55,7 @@ export class PackageFileManager extends BasePackageFileManager {
     document = document ? document : await readFileAsync(this._filePath);
     this._packageFileContent = typeof document === 'string' ? JSON.parse(document) : {};
     this._indentation = getIndentation(document);
+    this._finalNewLine = getFinalNewLine(document);
     switch (flag) {
       case DependenciesFlags.All:
         return this.allDependencies;
@@ -84,7 +94,10 @@ export class PackageFileManager extends BasePackageFileManager {
     if (resolvedDependecies.optionalDependencies) {
       this._packageFileContent.optionalDependencies = resolvedDependecies.optionalDependencies;
     }
-    const data = JSON.stringify(this._packageFileContent, null, this._indentation.indent || this._indentation.amount);
+    let data = JSON.stringify(this._packageFileContent, null, this._indentation.indent || this._indentation.amount);
+    if (this._finalNewLine.has) {
+      data += this._finalNewLine.type;
+    }
     return writeFileAsync(this._filePath, data);
   }
 }
