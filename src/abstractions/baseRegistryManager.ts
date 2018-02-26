@@ -19,19 +19,20 @@ export abstract class BaseRegistryManager {
       this._logger.updateLog(`Getting package info of '${packageName}' from registry`);
     }
     const _protocol = require(this._registryUrl.protocol.slice(0, -1));
-    const onResponce = (
-      responce: http.IncomingMessage,
+    const onResponse = (
+      response: http.IncomingMessage,
       res: (value?: INodePackage | PromiseLike<INodePackage>) => void,
       rej: (reason?: any) => void) => {
-      if (responce.statusCode && responce.statusMessage !== http.STATUS_CODES[200]) {
-        return rej(new Error(responce.statusMessage));
+      if (!response || (response.statusCode && response.statusMessage !== http.STATUS_CODES[200])) {
+        const errMsg = response ? response.statusMessage : 'No response received';
+        return rej(new Error(errMsg));
       }
       let data: any = '';
-      responce
+      response
         .on('error', error => rej(error))
         .on('data', (chunk: any) => data += chunk)
         .on('end', _ => {
-          if (!responce.headers['content-type'].includes('application/json')) {
+          if (!response.headers['content-type'].includes('application/json')) {
             return rej(new Error('Registry returned incompatible data'));
           }
           data = data instanceof Buffer
@@ -46,7 +47,7 @@ export abstract class BaseRegistryManager {
       res: (value?: INodePackage | PromiseLike<INodePackage>) => void,
       rej: (reason?: any) => void) =>
       _protocol
-        .get(_address, responce => onResponce(responce, res, rej))
+        .get(_address, response => onResponse(response, res, rej))
         .on('error', error => rej(error)));
   }
 }
