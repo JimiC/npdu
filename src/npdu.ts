@@ -24,7 +24,7 @@ class NPDU {
       const depFlag = this._getDependenciesFlag(pargs.command);
       const dependencies: IPackageDependencies = await pfm.getDependencies(depFlag);
       const rm = new RegistryManager(pargs.registry, _logger);
-      const options: IResolverOptions = { keepRange: pargs.keepRange, policy: pargs.policy };
+      const options: IResolverOptions = { keepRange: pargs.keepRange, strategy: pargs.strategy };
       const vr = new VersionResolver(options, rm, _logger);
       const resolvedDependencies: IPackageDependencies = await vr.resolve(dependencies);
       await pfm.persist(resolvedDependencies);

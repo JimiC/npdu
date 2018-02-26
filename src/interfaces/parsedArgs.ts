@@ -3,6 +3,6 @@ export interface IParsedArgs {
   filePath: string;
   keepRange: boolean;
   logger: boolean;
-  policy: string;
+  strategy: string;
   registry: string;
 }

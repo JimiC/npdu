@@ -6,7 +6,7 @@ export enum DependenciesFlags {
   All = 7,
 }
 
-export enum Policy {
+export enum Strategy {
   latest,
   semver,
 }

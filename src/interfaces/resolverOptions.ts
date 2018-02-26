@@ -1,5 +1,5 @@
 export interface IResolverOptions {
-  policy: string;
+  strategy: string;
   keepRange: boolean;
   [key: string]: any;
 }

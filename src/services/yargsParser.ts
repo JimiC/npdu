@@ -26,16 +26,16 @@ export class YargsParser {
       description: 'Use the built-in logger',
       type: 'boolean',
     },
-    policy: {
-      alias: 'p',
-      default: 'semver',
-      description: 'The policy on how the dependency version gets resolved',
-      type: 'string',
-    },
     registry: {
       alias: 'r',
       default: 'https://registry.npmjs.org',
       description: 'The URL of the NPM registry to use',
+      type: 'string',
+    },
+    strategy: {
+      alias: 'p',
+      default: 'semver',
+      description: 'The strategy on how the dependency version gets resolved',
       type: 'string',
     },
   };
@@ -51,7 +51,7 @@ export class YargsParser {
       .demandCommand(1, 'Missing command')
       .recommendCommands()
       .options(this._options)
-      .choices('policy', this._allowedPolicies)
+      .choices('strategy', this._allowedPolicies)
       .help()
       .alias('help', 'h')
       .version()
@@ -67,8 +67,8 @@ export class YargsParser {
       filePath: pargs.filePath,
       keepRange: pargs.keepRange,
       logger: pargs.logger,
-      policy: pargs.policy,
       registry: pargs.registry,
+      strategy: pargs.strategy,
     };
   }
 

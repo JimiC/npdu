@@ -1,6 +1,6 @@
 import semver from 'semver';
 import { BaseLogger, BaseRegistryManager, BaseVersionResolver } from '../abstractions';
-import { Policy } from '../common/enumerations';
+import { Strategy } from '../common/enumerations';
 import {
   IDependencies,
   INodePackage,
@@ -25,7 +25,7 @@ export class VersionResolver extends BaseVersionResolver {
         this._logger.updateLog(`Resolving version of package: '${packageName}'`);
       }
       const currentVersion = packages[packageName];
-      const newVersion = await this._findNewVersion(packageName, this._options.policy, currentVersion);
+      const newVersion = await this._findNewVersion(packageName, this._options.strategy, currentVersion);
       if (newVersion && currentVersion !== newVersion) {
         const depends = this._getDependenciesOfPackage(dependencies, packageName);
         depends[packageName] = newVersion;
@@ -34,7 +34,7 @@ export class VersionResolver extends BaseVersionResolver {
         }
       } else {
         if (this._logger) {
-          this._logger.updateLog(`Package: '${packageName}' is already up-to-date (${this._options.policy})`);
+          this._logger.updateLog(`Package: '${packageName}' is already up-to-date (${this._options.strategy})`);
         }
       }
     }
@@ -47,7 +47,7 @@ export class VersionResolver extends BaseVersionResolver {
       .reduce((p: IDependencies, c: IDependencies) => ({ ...p, ...c }), {});
   }
 
-  private async _findNewVersion(packageName: string, policy: string, currentVersion: string): Promise<string> {
+  private async _findNewVersion(packageName: string, strategy: string, currentVersion: string): Promise<string> {
     const info: INodePackage = await this._registryManager.getPackageInfo(packageName);
     if (!info) {
       if (this._logger) {
@@ -55,16 +55,16 @@ export class VersionResolver extends BaseVersionResolver {
       }
       return null;
     }
-    return this._getVersionFromPolicy(info, policy, currentVersion);
+    return this._getVersionFromStrategy(info, strategy, currentVersion);
   }
 
-  private _getVersionFromPolicy(info: INodePackage, policy: string, currentVersion: string): string {
-    switch (Policy[policy]) {
-      case Policy.latest:
+  private _getVersionFromStrategy(info: INodePackage, strategy: string, currentVersion: string): string {
+    switch (Strategy[strategy]) {
+      case Strategy.latest:
         return info['dist-tags']
           ? this._getRange(info['dist-tags'].latest, currentVersion)
           : currentVersion;
-      case Policy.semver:
+      case Strategy.semver:
         const newVersion = this._getMaxSatisfiedVersion(info, currentVersion);
         return this._getRange(newVersion, currentVersion);
       default:
