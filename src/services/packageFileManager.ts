@@ -1,16 +1,17 @@
 import { BaseLogger, BasePackageFileManager } from '../abstractions';
 import { DependenciesFlags } from '../common/enumerations';
 import { IDependencies, IPackageDependencies } from '../interfaces';
+import { getIndentation, readFileAsync, writeFileAsync } from '../utils';
 
 export class PackageFileManager extends BasePackageFileManager {
 
   private _packageFileContent: any;
+  private _indentation: any;
+  private _filePath: string;
 
-  constructor(private _document: string, logger?: BaseLogger) {
+  constructor(path?: string, logger?: BaseLogger) {
     super(logger);
-    this._packageFileContent = typeof this._document === 'string'
-      ? JSON.parse(this._document)
-      : {};
+    this._filePath = path;
   }
 
   public get allDependencies(): IPackageDependencies {
@@ -38,10 +39,13 @@ export class PackageFileManager extends BasePackageFileManager {
     return this._packageFileContent.optionalDependencies;
   }
 
-  public getDependencies(flag: DependenciesFlags): IPackageDependencies {
+  public async getDependencies(flag: DependenciesFlags, document?: string): Promise<IPackageDependencies> {
     if (this._logger) {
       this._logger.updateLog('Getting dependencies of \'package.json\'');
     }
+    document = document ? document : await readFileAsync(this._filePath);
+    this._packageFileContent = typeof document === 'string' ? JSON.parse(document) : {};
+    this._indentation = getIndentation(document);
     switch (flag) {
       case DependenciesFlags.All:
         return this.allDependencies;
@@ -58,12 +62,15 @@ export class PackageFileManager extends BasePackageFileManager {
     }
   }
 
-  public persist(resolvedDependecies: IPackageDependencies): PromiseLike<boolean> {
-    if (this._logger) {
-      this._logger.updateLog('Updating dependencies in \'package.json\'');
+  public async persist(resolvedDependecies: IPackageDependencies | ((...args: any[]) => Promise<void>)): Promise<void> {
+    if (typeof resolvedDependecies === 'function') {
+      return resolvedDependecies();
     }
     if (!Object.keys(resolvedDependecies).length) {
       return;
+    }
+    if (this._logger) {
+      this._logger.updateLog('Updating dependencies in \'package.json\'');
     }
     if (resolvedDependecies.dependencies) {
       this._packageFileContent.dependencies = resolvedDependecies.dependencies;
@@ -77,6 +84,7 @@ export class PackageFileManager extends BasePackageFileManager {
     if (resolvedDependecies.optionalDependencies) {
       this._packageFileContent.optionalDependencies = resolvedDependecies.optionalDependencies;
     }
-    // TODO: write changes to file
+    const data = JSON.stringify(this._packageFileContent, null, this._indentation.indent || this._indentation.amount);
+    return writeFileAsync(this._filePath, data);
   }
 }
