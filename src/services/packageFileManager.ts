@@ -2,6 +2,7 @@ import { BaseLogger, BasePackageFileManager } from '../abstractions';
 import { DependenciesFlags } from '../common/enumerations';
 import { IDependencies, IPackageDependencies } from '../interfaces';
 import {
+  getDependenciesFlagByKey,
   getFinalNewLine,
   getIndentation,
   isValidPath,
@@ -51,12 +52,15 @@ export class PackageFileManager extends BasePackageFileManager {
     return this._packageFileContent.optionalDependencies;
   }
 
-  public async getDependencies(flag: DependenciesFlags): Promise<IPackageDependencies> {
+  public async getDependencies(flag: string | DependenciesFlags): Promise<IPackageDependencies> {
     if (this._logger) {
       this._logger.updateLog('Getting dependencies of \'package.json\'');
     }
     if (!this._packageFileContent) {
       await this._setDocument();
+    }
+    if (typeof flag === 'string') {
+      flag = getDependenciesFlagByKey(flag);
     }
     switch (flag) {
       case DependenciesFlags.All:
@@ -70,7 +74,7 @@ export class PackageFileManager extends BasePackageFileManager {
       case DependenciesFlags.Optional:
         return { optionalDependencies: this.optionalDependencies };
       default:
-        throw new Error('Not Implemented');
+        throw new Error('Not Implemented (:getDependencies:)');
     }
   }
 
@@ -80,6 +84,9 @@ export class PackageFileManager extends BasePackageFileManager {
   ): Promise<void> {
     if (typeof resolvedDependecies === 'function') {
       return resolvedDependecies();
+    }
+    if (!this._filePath && !filePath) {
+      throw new Error('A path to the \'package.json\' file is required (:persist:)');
     }
     if (!Object.keys(resolvedDependecies).length) {
       return;
@@ -103,10 +110,6 @@ export class PackageFileManager extends BasePackageFileManager {
     if (this._finalNewLine.has) {
       data += this._finalNewLine.type;
     }
-    if (!this._filePath && !filePath) {
-      throw new Error('A path to the \'package.json\' file is required');
-     }
-
     return writeFileAsync(this._filePath || filePath, data);
   }
 

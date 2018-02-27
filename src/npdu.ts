@@ -1,4 +1,3 @@
-import { DependenciesFlags } from './common/enumerations';
 import { IPackageDependencies, IResolverOptions } from './interfaces';
 import {
   Logger,
@@ -21,8 +20,7 @@ class NPDU {
       const _logger = pargs.logger ? logger : null;
       if (_logger) { logger.log(''); }
       const pfm = new PackageFileManager(pargs.filePath, _logger);
-      const depFlag = this._getDependenciesFlag(pargs.command);
-      const dependencies: IPackageDependencies = await pfm.getDependencies(depFlag);
+      const dependencies: IPackageDependencies = await pfm.getDependencies(pargs.command);
       const rm = new RegistryManager(pargs.registry, _logger);
       const options: IResolverOptions = { keepRange: pargs.keepRange, strategy: pargs.strategy };
       const vr = new VersionResolver(options, rm, _logger);
@@ -34,21 +32,6 @@ class NPDU {
     } catch (error) {
       logger.spinnerLogStop(spinner, 'NPDU failed to update the dependencies');
       logger.updateLog(`Error: ${error.message || error}`);
-    }
-  }
-
-  private _getDependenciesFlag(command: string): DependenciesFlags {
-    switch (command) {
-      case 'all':
-        return DependenciesFlags.All;
-      case 'prod':
-        return DependenciesFlags.Prod;
-      case 'dev':
-        return DependenciesFlags.Dev;
-      case 'peer':
-        return DependenciesFlags.Peer;
-      case 'optional':
-        return DependenciesFlags.Optional;
     }
   }
 }

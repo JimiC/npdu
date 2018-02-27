@@ -1,6 +1,8 @@
 import detectIndent from 'detect-indent';
 import fs from 'fs';
 import path from 'path';
+import { DependenciesFlags } from '../common/enumerations';
+
 export const isNullOrUndefind = (obj: any, ...args: any[]): boolean => {
   let _isNullOrUndefind = !obj;
   if (!_isNullOrUndefind) {
@@ -31,4 +33,19 @@ export const getIndentation = (text: string): { amount: number, indent: string; 
 
 export const isValidPath = (filePath: string): boolean => {
   return filePath.includes(path.sep) || !!path.parse(filePath).ext;
+};
+
+export const getDependenciesFlagByKey = (key: string): DependenciesFlags => {
+  switch (key) {
+    case 'all':
+      return DependenciesFlags.All;
+    case 'prod':
+      return DependenciesFlags.Prod;
+    case 'dev':
+      return DependenciesFlags.Dev;
+    case 'peer':
+      return DependenciesFlags.Peer;
+    case 'optional':
+      return DependenciesFlags.Optional;
+  }
 };
