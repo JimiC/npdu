@@ -68,7 +68,7 @@ export class VersionResolver extends BaseVersionResolver {
         const newVersion = this._getMaxSatisfiedVersion(info, currentVersion);
         return this._getRange(newVersion, currentVersion);
       default:
-        throw new Error('Not Implemented');
+        throw new Error('Not Implemented (:getVersionFromStrategy:)');
     }
   }
 
