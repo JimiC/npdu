@@ -139,13 +139,13 @@ describe('Utils: tests', function () {
     context('function \'getIndentation\'', function () {
 
       it('returns the correct type',
-      function () {
-        const sut = utils.getIndentation(JSON.stringify(data, null, 2));
-        expect(sut).to.be.an('object');
-        expect(sut).to.have.property('amount');
-        expect(sut).to.have.property('indent');
-        expect(sut).to.have.property('type');
-      });
+        function () {
+          const sut = utils.getIndentation(JSON.stringify(data, null, 2));
+          expect(sut).to.be.an('object');
+          expect(sut).to.have.property('amount');
+          expect(sut).to.have.property('indent');
+          expect(sut).to.have.property('type');
+        });
 
       it('detects spacing indentation',
         function () {
@@ -194,6 +194,21 @@ describe('Utils: tests', function () {
       it('throws an Error if paramemter is not of type \'string\'',
         function () {
           expect(utils.getIndentation.bind(utils, data)).to.throw(/Expected a string/);
+        });
+
+    });
+
+    context('function \'isValidPath\'', function () {
+
+      it('returns \'true\' when provided parameter is a path',
+        function () {
+          expect(utils.isValidPath('./package.json')).to.be.true;
+          expect(utils.isValidPath('package.json')).to.be.true;
+        });
+
+      it('returns \'false\' when provided parameter is not a path',
+        function () {
+          expect(utils.isValidPath(JSON.stringify(data))).to.be.false;
         });
 
     });
