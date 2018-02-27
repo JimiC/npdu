@@ -4,23 +4,26 @@ import { IDependencies, IPackageDependencies } from '../interfaces';
 import {
   getFinalNewLine,
   getIndentation,
+  isValidPath,
   readFileAsync,
   writeFileAsync,
 } from '../utils';
 
 export class PackageFileManager extends BasePackageFileManager {
 
-  private _packageFileContent: IPackageDependencies;
-  private _indentation: any;
+  private _document: string;
   private _filePath: string;
-  private _finalNewLine: {
-    has: boolean;
-    type: string;
-  };
+  private _finalNewLine: { has: boolean; type: string; };
+  private _indentation: any;
+  private _packageFileContent: IPackageDependencies;
 
-  constructor(path?: string, logger?: BaseLogger) {
+  constructor(filePathOrDocument: string, logger?: BaseLogger) {
     super(logger);
-    this._filePath = path;
+    if (isValidPath(filePathOrDocument)) {
+      this._filePath = filePathOrDocument;
+    } else {
+      this._document = filePathOrDocument;
+    }
   }
 
   public get allDependencies(): IPackageDependencies {
@@ -48,14 +51,13 @@ export class PackageFileManager extends BasePackageFileManager {
     return this._packageFileContent.optionalDependencies;
   }
 
-  public async getDependencies(flag: DependenciesFlags, document?: string): Promise<IPackageDependencies> {
+  public async getDependencies(flag: DependenciesFlags): Promise<IPackageDependencies> {
     if (this._logger) {
       this._logger.updateLog('Getting dependencies of \'package.json\'');
     }
-    document = document ? document : await readFileAsync(this._filePath);
-    this._packageFileContent = typeof document === 'string' ? JSON.parse(document) : {};
-    this._indentation = getIndentation(document);
-    this._finalNewLine = getFinalNewLine(document);
+    if (!this._packageFileContent) {
+      await this._setDocument();
+    }
     switch (flag) {
       case DependenciesFlags.All:
         return this.allDependencies;
@@ -72,7 +74,10 @@ export class PackageFileManager extends BasePackageFileManager {
     }
   }
 
-  public async persist(resolvedDependecies: IPackageDependencies | ((...args: any[]) => Promise<void>)): Promise<void> {
+  public async persist(
+    resolvedDependecies: IPackageDependencies | ((...args: any[]) => Promise<void>),
+    filePath?: string,
+  ): Promise<void> {
     if (typeof resolvedDependecies === 'function') {
       return resolvedDependecies();
     }
@@ -98,6 +103,17 @@ export class PackageFileManager extends BasePackageFileManager {
     if (this._finalNewLine.has) {
       data += this._finalNewLine.type;
     }
-    return writeFileAsync(this._filePath, data);
+    if (!this._filePath && !filePath) {
+      throw new Error('A path to the \'package.json\' file is required');
+     }
+
+    return writeFileAsync(this._filePath || filePath, data);
+  }
+
+  private async _setDocument(): Promise<void> {
+    const document = this._filePath ? await readFileAsync(this._filePath) : this._document;
+    this._packageFileContent = typeof document === 'string' ? JSON.parse(document) : {};
+    this._indentation = getIndentation(document);
+    this._finalNewLine = getFinalNewLine(document);
   }
 }

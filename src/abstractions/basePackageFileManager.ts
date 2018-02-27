@@ -9,5 +9,6 @@ export abstract class BasePackageFileManager {
 
   public abstract async persist(
     resolvedDependecies: IPackageDependencies | ((...args: any[]) => Promise<void>),
+    filePath?: string,
   ): Promise<void>;
 }

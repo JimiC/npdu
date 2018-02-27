@@ -1,6 +1,6 @@
 import detectIndent from 'detect-indent';
 import fs from 'fs';
-
+import path from 'path';
 export const isNullOrUndefind = (obj: any, ...args: any[]): boolean => {
   let _isNullOrUndefind = !obj;
   if (!_isNullOrUndefind) {
@@ -12,12 +12,12 @@ export const isNullOrUndefind = (obj: any, ...args: any[]): boolean => {
   return _isNullOrUndefind;
 };
 
-export const readFileAsync = (path: string, encoding = 'utf8'): Promise<string> => {
-  return new Promise((res, rej) => fs.readFile(path, encoding, (err, data) => err ? rej(err) : res(data)));
+export const readFileAsync = (filePath: string, encoding = 'utf8'): Promise<string> => {
+  return new Promise((res, rej) => fs.readFile(filePath, encoding, (err, data) => err ? rej(err) : res(data)));
 };
 
-export const writeFileAsync = (path: string, data: any): Promise<void> => {
-  return new Promise((res, rej) => fs.writeFile(path, data, err => err ? rej(err) : res()));
+export const writeFileAsync = (filePath: string, data: any): Promise<void> => {
+  return new Promise((res, rej) => fs.writeFile(filePath, data, err => err ? rej(err) : res()));
 };
 
 export const getFinalNewLine = (text: string): { has: boolean, type: string } => {
@@ -27,4 +27,8 @@ export const getFinalNewLine = (text: string): { has: boolean, type: string } =>
 
 export const getIndentation = (text: string): { amount: number, indent: string; type: string } => {
   return detectIndent(text);
+};
+
+export const isValidPath = (filePath: string): boolean => {
+  return filePath.includes(path.sep) || !!path.parse(filePath).ext;
 };
