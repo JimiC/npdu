@@ -37,7 +37,7 @@
       "stopOnEntry": false,
       "sourceMaps": true,
       "outFiles": [
-        "${workspaceFolder}/out/test/**/*.test.js"
+        "${workspaceFolder}/out/**/*.js"
       ]
     }
   ]
