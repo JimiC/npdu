@@ -138,40 +138,45 @@ describe('Utils: tests', function () {
 
     context('function \'getIndentation\'', function () {
 
+      it('returns the correct type',
+      function () {
+        const sut = utils.getIndentation(JSON.stringify(data, null, 2));
+        expect(sut).to.be.an('object');
+        expect(sut).to.have.property('amount');
+        expect(sut).to.have.property('indent');
+        expect(sut).to.have.property('type');
+      });
+
       it('detects spacing indentation',
         function () {
           const sut = utils.getIndentation(JSON.stringify(data, null, 2));
-          expect(sut).to.be.an('object');
-          expect(sut.type).to.equal('space');
-          expect(sut.indent).to.equal('  ');
           expect(sut.amount).to.equal(2);
+          expect(sut.indent).to.equal('  ');
+          expect(sut.type).to.equal('space');
         });
 
       it('detects tab indentation',
         function () {
           const sut = utils.getIndentation(JSON.stringify(data, null, '\t'));
-          expect(sut).to.be.an('object');
-          expect(sut.type).to.equal('tab');
-          expect(sut.indent).to.equal('\t');
           expect(sut.amount).to.equal(1);
+          expect(sut.indent).to.equal('\t');
+          expect(sut.type).to.equal('tab');
         });
 
       it('detects no indentation',
         function () {
           const sut = utils.getIndentation(JSON.stringify(data, null, ''));
-          expect(sut).to.be.an('object');
-          expect(sut.type).to.be.null;
-          expect(sut.indent).to.equal('');
           expect(sut.amount).to.equal(0);
+          expect(sut.indent).to.equal('');
+          expect(sut.type).to.be.null;
         });
 
       it('detects same indentations',
         function () {
           const sut = utils.getIndentation(JSON.stringify(data, null, 2));
-          expect(sut).to.be.an('object');
-          expect(sut.type).to.equal('space');
-          expect(sut.indent).to.equal('  ');
           expect(sut.amount).to.equal(2);
+          expect(sut.indent).to.equal('  ');
+          expect(sut.type).to.equal('space');
         });
 
       it('ignores empty lines',
@@ -181,10 +186,9 @@ describe('Utils: tests', function () {
             obj: 'test',
           }`;
           const sut = utils.getIndentation(text);
-          expect(sut).to.be.an('object');
-          expect(sut.type).to.equal('space');
-          expect(sut.indent).to.equal('            ');
           expect(sut.amount).to.equal(12);
+          expect(sut.indent).to.equal('            ');
+          expect(sut.type).to.equal('space');
         });
 
       it('throws an Error if paramemter is not of type \'string\'',
