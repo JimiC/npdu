@@ -41,40 +41,35 @@ describe('YargsParser: tests', function () {
       function () {
         const args = ['node', 'npdu', 'all'];
         argv.value(args);
-        const sut = parser.parse();
-        expect(sut).to.be.have.property('command', args[2]);
+        expect(parser.parse()).to.be.have.property('command', args[2]);
       });
 
     it('that the \'filePath\' option gets parsed correctly',
       function () {
         const args = ['node', 'npdu', 'all', '-f', '.'];
         argv.value(args);
-        const sut = parser.parse();
-        expect(sut).to.be.have.property('filePath', args[4]);
+        expect(parser.parse()).to.be.have.property('filePath', args[4]);
       });
 
     it('that the \'keepRange\' option gets parsed correctly',
       function () {
         const args = ['node', 'npdu', 'all', '-k', 'false'];
         argv.value(args);
-        const sut = parser.parse();
-        expect(sut).to.be.have.property('keepRange', args[4] === 'true');
+        expect(parser.parse()).to.be.have.property('keepRange', args[4] === 'true');
       });
 
     it('that the \'logger\' option gets parsed correctly',
       function () {
         const args = ['node', 'npdu', 'all', '-l', 'false'];
         argv.value(args);
-        const sut = parser.parse();
-        expect(sut).to.be.have.property('logger', args[4] === 'true');
+        expect(parser.parse()).to.be.have.property('logger', args[4] === 'true');
       });
 
     it('that the \'strategy\' option gets parsed correctly',
       function () {
         const args = ['node', 'npdu', 'all', '-s', 'latest'];
         argv.value(args);
-        const sut = parser.parse();
-        expect(sut).to.be.have.property('strategy', args[4]);
+        expect(parser.parse()).to.be.have.property('strategy', args[4]);
       });
 
     context('that the \'registry\' option', function () {
@@ -83,8 +78,7 @@ describe('YargsParser: tests', function () {
         function () {
           const args = ['node', 'npdu', 'all', '-r', 'http://myregistry.yz'];
           argv.value(args);
-          const sut = parser.parse();
-          expect(sut).to.be.have.property('registry', args[4]);
+          expect(parser.parse()).to.be.have.property('registry', args[4]);
         });
 
       it('supports valid URL',
@@ -97,28 +91,28 @@ describe('YargsParser: tests', function () {
 
       it('throws an Error on invalid URL',
         function () {
-          const stderrStub = sandbox.stub(process.stderr, 'write');
+          const consoleErrorStub = sandbox.stub(console, 'error');
           const exitStub = sandbox.stub(process, 'exit');
           argv.value(['node', 'npdu', 'all', '-r', '//my.registry.yz']);
           parser.parse();
-          expect(stderrStub.called).to.be.true;
+          expect(consoleErrorStub.called).to.be.true;
           expect(exitStub.called).to.be.true;
+          consoleErrorStub.restore();
           exitStub.restore();
-          stderrStub.restore();
         });
 
     });
 
     it('to throw an Error on invalid file path',
       function () {
-        const stderrStub = sandbox.stub(process.stderr, 'write');
+        const consoleErrorStub = sandbox.stub(console, 'error');
         const exitStub = sandbox.stub(process, 'exit');
         argv.value(['node', 'npdu', 'all', '-f', 'file.io']);
         parser.parse();
-        expect(stderrStub.called).to.be.true;
+        expect(consoleErrorStub.called).to.be.true;
         expect(exitStub.called).to.be.true;
+        consoleErrorStub.restore();
         exitStub.restore();
-        stderrStub.restore();
       });
 
     context('when a Logger is provided', function () {
@@ -143,13 +137,15 @@ describe('YargsParser: tests', function () {
 
       it('it logs the Error messages to the terminal',
         function () {
+          const consoleErrorStub = sandbox.stub(console, 'error');
           const stderrStub = sandbox.stub(process.stderr, 'write');
           const exitStub = sandbox.stub(process, 'exit');
           argv.value(['node', 'npdu', 'all', '-f', 'file.io']);
           parser.parse();
           expect(logger.error.called).to.be.true;
-          exitStub.restore();
           stderrStub.restore();
+          consoleErrorStub.restore();
+          exitStub.restore();
         });
 
     });
