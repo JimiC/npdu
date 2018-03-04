@@ -18,15 +18,6 @@ export class PackageFileManager extends BasePackageFileManager {
   private _indentation: any;
   private _packageFileContent: IPackageDependencies;
 
-  constructor(filePathOrDocument: string, private _logger?: BaseLogger) {
-    super();
-    if (isValidPath(filePathOrDocument)) {
-      this._filePath = filePathOrDocument;
-    } else {
-      this._document = filePathOrDocument;
-    }
-  }
-
   public get allDependencies(): IPackageDependencies {
     return {
       dependencies: this.dependencies,
@@ -50,6 +41,15 @@ export class PackageFileManager extends BasePackageFileManager {
 
   public get optionalDependencies(): IDependencies {
     return this._packageFileContent.optionalDependencies;
+  }
+
+  constructor(filePathOrDocument: string, private _logger?: BaseLogger) {
+    super();
+    if (isValidPath(filePathOrDocument)) {
+      this._filePath = filePathOrDocument;
+    } else {
+      this._document = filePathOrDocument;
+    }
   }
 
   public async getDependencies(flag: string | DependenciesFlags): Promise<IPackageDependencies> {

@@ -2,6 +2,8 @@
   "extends": "./tsconfig.dev.json",
   "compilerOptions": {
     "target": "es5",
+    "declaration": true,
+    "diagnostics": false,
     "sourceMap": false
   }
 }

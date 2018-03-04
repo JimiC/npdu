@@ -1,9 +1,8 @@
-import { Logger } from '.';
-import { BaseRegistryManager } from '../abstractions';
+import { BaseLogger, BaseRegistryManager } from '../abstractions';
 
 export class RegistryManager extends BaseRegistryManager {
 
-  constructor(uri: string, logger?: Logger) {
+  constructor(uri: string, logger?: BaseLogger) {
     super(uri, logger);
   }
 

@@ -33,6 +33,7 @@
   "files": [
     "lib"
   ],
+  "types": "lib/npdu.d.ts",
   "scripts": {
     "start": "node ./out/src/cli.js",
     "prebuild:dev": "npm run prebuild",

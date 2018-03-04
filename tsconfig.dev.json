@@ -6,6 +6,8 @@
     "noUnusedParameters": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
+    "alwaysStrict": true,
+    "diagnostics": true,
     "target": "es6",
     "outDir": "out",
     "lib": [

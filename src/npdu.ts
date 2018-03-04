@@ -7,15 +7,15 @@ import {
   YargsParser,
 } from './services';
 
-class NPDU {
+export default class NPDU {
   constructor() {
     this._init();
   }
 
-  private async _init() {
+  private async _init(): Promise<void> {
     const logger = new Logger();
     const pargs = new YargsParser(logger).parse();
-    const spinner = logger.spinnerLogStart('Updating dependencies...');
+    const spinner = logger.spinnerLogStart('Updating dependencies');
     try {
       const _logger = pargs.logger ? logger : null;
       if (_logger) { logger.log(''); }

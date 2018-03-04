@@ -1,14 +1,14 @@
 import http from 'http';
 import url from 'url';
+import { BaseLogger } from '.';
 import { INodePackage } from '../interfaces';
-import { Logger } from '../services';
 import { isValidUri } from '../utils';
 
 export abstract class BaseRegistryManager {
 
   private readonly _registryUrl: url.Url;
 
-  constructor(private _uri: string, protected _logger?: Logger) {
+  constructor(private _uri: string, protected _logger?: BaseLogger) {
     this._registryUrl = url.parse(this._uri);
   }
 
