@@ -47,7 +47,7 @@
     "compile": "tsc",
     "lint": "tslint -p .",
     "pretest": "rimraf ./.nyc_output ./coverage && npm run compile:dev",
-    "test": "nyc -c -x '' mocha ./out/test --recursive",
+    "test": "nyc -c -x '' mocha ./out/test",
     "posttest": "nyc report -r lcov",
     "preversion": "npm t",
     "prepublishOnly": "rimraf ./lib && npm run build && cpx 'out/src/**/*' lib"

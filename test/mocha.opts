@@ -1,3 +1,4 @@
 --colors
---timeout 15000
---ui bdd
+--exit
+--recursive
+--retries 3
