@@ -12,6 +12,7 @@
       "args": [
         "prod"
       ],
+      "runtimeExecutable": "${env:HOME}/.nvm/versions/node/v6.13.0/bin/node",
       "preLaunchTask": "tsc: build - tsconfig.dev.json",
       "stopOnEntry": false,
       "sourceMaps": true,
@@ -32,6 +33,7 @@
         "--colors",
         "${workspaceFolder}/out/test/**/*.test.js"
       ],
+      "runtimeExecutable": "${env:HOME}/.nvm/versions/node/v6.13.0/bin/node",
       "internalConsoleOptions": "openOnSessionStart",
       "preLaunchTask": "tsc: build - tsconfig.dev.json",
       "stopOnEntry": false,
