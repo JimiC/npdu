@@ -26,11 +26,6 @@
       "name": "Mocha Tests",
       "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
       "args": [
-        "-u",
-        "bdd",
-        "--timeout",
-        "15000",
-        "--colors",
         "${workspaceFolder}/out/test/**/*.test.js"
       ],
       "runtimeExecutable": "${env:HOME}/.nvm/versions/node/v6.13.0/bin/node",
