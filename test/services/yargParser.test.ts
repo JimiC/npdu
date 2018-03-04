@@ -109,7 +109,7 @@ describe('YargsParser: tests', function () {
 
     });
 
-    it('throws an Error on invalid file path',
+    it('to throw an Error on invalid file path',
       function () {
         const stderrStub = sandbox.stub(process.stderr, 'write');
         const exitStub = sandbox.stub(process, 'exit');

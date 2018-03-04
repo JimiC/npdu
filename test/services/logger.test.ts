@@ -237,46 +237,45 @@ describe('Logger: tests', function () {
                 expect(stub.calledWith('\u001B[?25l')).to.be.true;
               });
 
+            it('after the message',
+              function () {
+                sandbox.stub(process.stdout, 'isTTY').returns(true);
+                logger.showSpinnerInFront = false;
+                const stub = sandbox.stub(process.stdout, 'write');
+                const logSpy = sandbox.spy(logger, 'log');
+                const updateLogSpy = sandbox.spy(logger, 'updateLog');
+                const spinner = logger.spinnerLogStart('test');
+                timer.tick(logger.spinnerInterval);
+                clearInterval(spinner.timer);
+                stub.restore();
+                expect(updateLogSpy.calledOnce).to.be.true;
+                expect(updateLogSpy.calledWith('test\\ ', 1)).to.be.true;
+                expect(updateLogSpy.calledAfter(logSpy)).to.be.true;
+                expect(logSpy.calledOnce).to.be.true;
+                expect(logSpy.calledWith('test')).to.be.true;
+                expect(stub.calledWith('\u001B[?25l')).to.be.true;
+              });
+
+            it('and the \'groupId\' when provided',
+              function () {
+                sandbox.stub(process.stdout, 'isTTY').returns(true);
+                logger.showSpinnerInFront = false;
+                const stub = sandbox.stub(process.stdout, 'write');
+                const logSpy = sandbox.spy(logger, 'log');
+                const updateLogSpy = sandbox.spy(logger, 'updateLog');
+                const spinner = logger.spinnerLogStart('test', 'Mocha');
+                timer.tick(logger.spinnerInterval);
+                clearInterval(spinner.timer);
+                stub.restore();
+                expect(updateLogSpy.calledOnce).to.be.true;
+                expect(updateLogSpy.calledWith('[Mocha]: test\\ ', 1)).to.be.true;
+                expect(updateLogSpy.calledAfter(logSpy)).to.be.true;
+                expect(logSpy.calledOnce).to.be.true;
+                expect(logSpy.calledWith('test', 'Mocha')).to.be.true;
+                expect(stub.calledWith('\u001B[?25l')).to.be.true;
+              });
+
           });
-
-          it('after the message',
-            function () {
-              sandbox.stub(process.stdout, 'isTTY').returns(true);
-              logger.showSpinnerInFront = false;
-              const stub = sandbox.stub(process.stdout, 'write');
-              const logSpy = sandbox.spy(logger, 'log');
-              const updateLogSpy = sandbox.spy(logger, 'updateLog');
-              const spinner = logger.spinnerLogStart('test');
-              timer.tick(logger.spinnerInterval);
-              clearInterval(spinner.timer);
-              stub.restore();
-              expect(updateLogSpy.calledOnce).to.be.true;
-              expect(updateLogSpy.calledWith('test\\ ', 1)).to.be.true;
-              expect(updateLogSpy.calledAfter(logSpy)).to.be.true;
-              expect(logSpy.calledOnce).to.be.true;
-              expect(logSpy.calledWith('test')).to.be.true;
-              expect(stub.calledWith('\u001B[?25l')).to.be.true;
-            });
-
-          it('and the \'groupId\' when provided',
-            function () {
-              sandbox.stub(process.stdout, 'isTTY').returns(true);
-              logger.showSpinnerInFront = false;
-              const stub = sandbox.stub(process.stdout, 'write');
-              const logSpy = sandbox.spy(logger, 'log');
-              const updateLogSpy = sandbox.spy(logger, 'updateLog');
-              const spinner = logger.spinnerLogStart('test', 'Mocha');
-              timer.tick(logger.spinnerInterval);
-              clearInterval(spinner.timer);
-              stub.restore();
-              expect(updateLogSpy.calledOnce).to.be.true;
-              expect(updateLogSpy.calledWith('[Mocha]: test\\ ', 1)).to.be.true;
-              expect(updateLogSpy.calledAfter(logSpy)).to.be.true;
-              expect(logSpy.calledOnce).to.be.true;
-              expect(logSpy.calledWith('test', 'Mocha')).to.be.true;
-              expect(stub.calledWith('\u001B[?25l')).to.be.true;
-            });
-
         });
 
         context('is not TTY', function () {

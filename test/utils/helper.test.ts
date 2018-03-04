@@ -26,7 +26,7 @@ describe('Utils: tests', function () {
       };
     });
 
-    context('function \'isNullOrUndefind\' returns', function () {
+    context('function \'isNullOrUndefind\' to return', function () {
 
       it('\'true\', when object path results to \'null\' or \'undefined\'',
         function () {
@@ -65,12 +65,12 @@ describe('Utils: tests', function () {
         fs.unlinkSync(filePath);
       });
 
-      it('returns the file content',
+      it('to return the file content',
         async function () {
           expect(await utils.readFileAsync(filePath)).to.equal(fileContent);
         });
 
-      it('throws an Error when file does not exists',
+      it('to throw an Error when file does not exists',
         async function () {
           try {
             await utils.readFileAsync('');
@@ -94,12 +94,12 @@ describe('Utils: tests', function () {
         fs.unlinkSync(filePath);
       });
 
-      it('writes the file content',
+      it('to write the file content to the provided file path',
         async function () {
           expect(await utils.writeFileAsync(filePath, fileContent)).to.be.undefined;
         });
 
-      it('throws an Error when anything goes wrong',
+      it('to throw an Error when anything goes wrong',
         async function () {
           try {
             await utils.writeFileAsync('', fileContent);
@@ -109,7 +109,7 @@ describe('Utils: tests', function () {
         });
     });
 
-    context('function \'getFinalNewLine\' detects', function () {
+    context('function \'getFinalNewLine\' to detect', function () {
 
       it('LF as the EOL',
         function () {
@@ -139,7 +139,7 @@ describe('Utils: tests', function () {
 
     context('function \'getIndentation\'', function () {
 
-      it('returns the correct type',
+      it('to return the correct type',
         function () {
           const sut = utils.getIndentation(JSON.stringify(data, null, 2));
           expect(sut).to.be.an('object');
@@ -148,7 +148,7 @@ describe('Utils: tests', function () {
           expect(sut).to.have.property('type');
         });
 
-      it('detects spacing indentation',
+      it('to detect spacing indentation',
         function () {
           const sut = utils.getIndentation(JSON.stringify(data, null, 2));
           expect(sut.amount).to.equal(2);
@@ -156,7 +156,7 @@ describe('Utils: tests', function () {
           expect(sut.type).to.equal('space');
         });
 
-      it('detects tab indentation',
+      it('to detect tab indentation',
         function () {
           const sut = utils.getIndentation(JSON.stringify(data, null, '\t'));
           expect(sut.amount).to.equal(1);
@@ -164,7 +164,7 @@ describe('Utils: tests', function () {
           expect(sut.type).to.equal('tab');
         });
 
-      it('detects no indentation',
+      it('to detect no indentation',
         function () {
           const sut = utils.getIndentation(JSON.stringify(data, null, ''));
           expect(sut.amount).to.equal(0);
@@ -172,7 +172,7 @@ describe('Utils: tests', function () {
           expect(sut.type).to.be.null;
         });
 
-      it('detects same indentations',
+      it('to detect same indentations',
         function () {
           const sut = utils.getIndentation(JSON.stringify(data, null, 2));
           expect(sut.amount).to.equal(2);
@@ -180,7 +180,7 @@ describe('Utils: tests', function () {
           expect(sut.type).to.equal('space');
         });
 
-      it('ignores empty lines',
+      it('to ignore empty lines',
         function () {
           const text = `{
 
@@ -192,22 +192,22 @@ describe('Utils: tests', function () {
           expect(sut.type).to.equal('space');
         });
 
-      it('throws an Error if paramemter is not of type \'string\'',
+      it('to throw an Error if paramemter is not of type \'string\'',
         function () {
           expect(() => utils.getIndentation(data)).to.throw(/Expected a string/);
         });
 
     });
 
-    context('function \'isValidPath\'', function () {
+    context('function \'isValidPath\' to return', function () {
 
-      it('returns \'true\' when provided parameter is a path',
+      it('\'true\' when provided parameter is a path',
         function () {
           expect(utils.isValidPath('./package.json')).to.be.true;
           expect(utils.isValidPath('package.json')).to.be.true;
         });
 
-      it('returns \'false\' when provided parameter is not a path',
+      it('\'false\' when provided parameter is not a path',
         function () {
           expect(utils.isValidPath(JSON.stringify(data))).to.be.false;
         });
@@ -216,7 +216,7 @@ describe('Utils: tests', function () {
 
     context('function \'getDependenciesFlagByKey\'', function () {
 
-      it('returns the correct enumeration member',
+      it('to return the correct enumeration member',
         function () {
           expect(utils.getDependenciesFlagByKey('all')).to.equal(DependenciesFlags.All);
           expect(utils.getDependenciesFlagByKey('prod')).to.equal(DependenciesFlags.Prod);
@@ -225,7 +225,7 @@ describe('Utils: tests', function () {
           expect(utils.getDependenciesFlagByKey('optional')).to.equal(DependenciesFlags.Optional);
         });
 
-      it('throws an Error when an enumeration member does not exists',
+      it('to throw an Error when an enumeration member does not exists',
         function () {
           expect(() => utils.getDependenciesFlagByKey('test')).to.throw(/Not Implemented/);
         });
@@ -234,12 +234,12 @@ describe('Utils: tests', function () {
 
     context('function \'isValidUri\'', function () {
 
-      it('returns true when provided \'uri\' is valid',
+      it('to return \'true\' when provided \'uri\' is valid',
         function () {
           expect(utils.isValidUri('http://some.domain.yz')).to.be.true;
         });
 
-      it('returns false when provided \'uri\' is invalid',
+      it('to return \'false\' when provided \'uri\' is invalid',
         function () {
           expect(utils.isValidUri('test')).to.be.false;
         });

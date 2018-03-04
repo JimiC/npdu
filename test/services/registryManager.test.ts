@@ -48,7 +48,7 @@ describe('RegistryManager: tests', function () {
         expect(manager.urlEncode('@types/node')).to.equal('@types%2Fnode');
       });
 
-    it('to to throw an Error when the provide uri is invalid',
+    it('to throw an Error when the provide uri is invalid',
       async function () {
         manager = new RegistryManager('invalidUri');
         try {
