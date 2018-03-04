@@ -4,6 +4,7 @@ import { expect } from 'chai';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
+import { DependenciesFlags } from '../../src/common/enumerations';
 import * as utils from '../../src/utils';
 
 describe('Utils: tests', function () {
@@ -193,7 +194,7 @@ describe('Utils: tests', function () {
 
       it('throws an Error if paramemter is not of type \'string\'',
         function () {
-          expect(utils.getIndentation.bind(utils, data)).to.throw(/Expected a string/);
+          expect(() => utils.getIndentation(data)).to.throw(/Expected a string/);
         });
 
     });
@@ -209,6 +210,38 @@ describe('Utils: tests', function () {
       it('returns \'false\' when provided parameter is not a path',
         function () {
           expect(utils.isValidPath(JSON.stringify(data))).to.be.false;
+        });
+
+    });
+
+    context('function \'getDependenciesFlagByKey\'', function () {
+
+      it('returns the correct enumeration member',
+        function () {
+          expect(utils.getDependenciesFlagByKey('all')).to.equal(DependenciesFlags.All);
+          expect(utils.getDependenciesFlagByKey('prod')).to.equal(DependenciesFlags.Prod);
+          expect(utils.getDependenciesFlagByKey('dev')).to.equal(DependenciesFlags.Dev);
+          expect(utils.getDependenciesFlagByKey('peer')).to.equal(DependenciesFlags.Peer);
+          expect(utils.getDependenciesFlagByKey('optional')).to.equal(DependenciesFlags.Optional);
+        });
+
+      it('throws an Error when an enumeration member does not exists',
+        function () {
+          expect(() => utils.getDependenciesFlagByKey('test')).to.throw(/Not Implemented/);
+        });
+
+    });
+
+    context('function \'isValidUri\'', function () {
+
+      it('returns true when provided \'uri\' is valid',
+        function () {
+          expect(utils.isValidUri('http://some.domain.yz')).to.be.true;
+        });
+
+      it('returns false when provided \'uri\' is invalid',
+        function () {
+          expect(utils.isValidUri('test')).to.be.false;
         });
 
     });

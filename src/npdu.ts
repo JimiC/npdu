@@ -36,4 +36,4 @@ class NPDU {
   }
 }
 
-export const npdu = new NPDU();
+export const npdu: NPDU = new NPDU();

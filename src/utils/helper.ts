@@ -3,6 +3,9 @@ import fs from 'fs';
 import path from 'path';
 import { DependenciesFlags } from '../common/enumerations';
 
+export const validUrlRegEx =
+  /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/;
+
 export const isNullOrUndefind = (obj: any, ...args: any[]): boolean => {
   let _isNullOrUndefind = !obj;
   if (!_isNullOrUndefind) {
@@ -47,5 +50,11 @@ export const getDependenciesFlagByKey = (key: string): DependenciesFlags => {
       return DependenciesFlags.Peer;
     case 'optional':
       return DependenciesFlags.Optional;
+    default:
+      throw new Error('Not Implemented (:getDependenciesFlagByKey:)');
   }
+};
+
+export const isValidUri = (uri: string): boolean => {
+  return validUrlRegEx.test(uri);
 };

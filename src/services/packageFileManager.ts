@@ -18,8 +18,8 @@ export class PackageFileManager extends BasePackageFileManager {
   private _indentation: any;
   private _packageFileContent: IPackageDependencies;
 
-  constructor(filePathOrDocument: string, logger?: BaseLogger) {
-    super(logger);
+  constructor(filePathOrDocument: string, private _logger?: BaseLogger) {
+    super();
     if (isValidPath(filePathOrDocument)) {
       this._filePath = filePathOrDocument;
     } else {

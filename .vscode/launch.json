@@ -10,7 +10,7 @@
       "name": "Launch Program",
       "program": "${workspaceFolder}/out/src/cli.js",
       "args": [
-        "all"
+        "prod"
       ],
       "preLaunchTask": "tsc: build - tsconfig.dev.json",
       "stopOnEntry": false,

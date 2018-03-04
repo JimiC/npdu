@@ -11,10 +11,10 @@ import {
 export class VersionResolver extends BaseVersionResolver {
 
   constructor(
-    options: IResolverOptions,
-    registryManager: BaseRegistryManager,
-    logger?: BaseLogger) {
-    super(options, registryManager, logger);
+    private _options: IResolverOptions,
+    private _registryManager: BaseRegistryManager,
+    private _logger?: BaseLogger) {
+    super();
   }
 
   public async resolve(dependencies: IPackageDependencies): Promise<IPackageDependencies> {

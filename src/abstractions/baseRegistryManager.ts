@@ -2,6 +2,7 @@ import http from 'http';
 import url from 'url';
 import { INodePackage } from '../interfaces';
 import { Logger } from '../services';
+import { isValidUri } from '../utils';
 
 export abstract class BaseRegistryManager {
 
@@ -14,6 +15,9 @@ export abstract class BaseRegistryManager {
   public abstract urlEncode(name: string): string;
 
   public async getPackageInfo(packageName: string): Promise<INodePackage> {
+    if (!isValidUri(this._registryUrl.href)) {
+      throw new Error(`Invalid Uri: ${this._registryUrl.href} (:getPackageInfo:)`);
+    }
     const _address = url.resolve(this._registryUrl.href, this.urlEncode(packageName));
     if (this._logger) {
       this._logger.updateLog(`Getting package info of '${packageName}' from registry`);
@@ -31,17 +35,9 @@ export abstract class BaseRegistryManager {
       response
         .on('error', error => rej(error))
         .on('data', (chunk: any) => data += chunk)
-        .on('end', _ => {
-          if (!response.headers['content-type'].includes('application/json')) {
-            return rej(new Error('Registry returned incompatible data (:getPackageInfo:)'));
-          }
-          data = data instanceof Buffer
-            ? JSON.parse(data.toString())
-            : typeof data === 'string'
-              ? JSON.parse(data)
-              : data;
-          return res(data);
-        }).setEncoding('utf8');
+        .on('end', _ => response.headers['content-type'].includes('application/json') && data
+          ? res(JSON.parse(data))
+          : rej(new Error('Registry returned incompatible data (:getPackageInfo:)')));
     };
     return new Promise<INodePackage>((
       res: (value?: INodePackage | PromiseLike<INodePackage>) => void,

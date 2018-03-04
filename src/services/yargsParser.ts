@@ -2,6 +2,7 @@ import fs from 'fs';
 import y = require('yargs');
 import { BaseLogger } from '../abstractions';
 import { IParsedArgs } from '../interfaces';
+import { isValidUri } from '../utils';
 
 export class YargsParser {
   private readonly _allowedPolicies = ['semver', 'latest'];
@@ -33,7 +34,7 @@ export class YargsParser {
       type: 'string',
     },
     strategy: {
-      alias: 'p',
+      alias: 's',
       default: 'semver',
       description: 'The strategy on how the dependency version gets resolved',
       type: 'string',
@@ -61,7 +62,7 @@ export class YargsParser {
   }
 
   public parse(): IParsedArgs {
-    const pargs = y.parse(process.argv.splice(2));
+    const pargs = y.parse(process.argv.slice(2));
     return {
       command: pargs._[0],
       filePath: pargs.filePath,
@@ -74,8 +75,7 @@ export class YargsParser {
 
   private validate(argv: y.Arguments): boolean {
     let errorMsg: string;
-    const regex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g;
-    if (!regex.test(argv.registry)) {
+    if (!isValidUri(argv.registry)) {
       errorMsg = 'Invalid argument: \'registry\'';
     }
     if (!fs.existsSync(argv.filePath)) {
