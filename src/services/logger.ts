@@ -3,8 +3,11 @@ import { BaseLogger } from '../abstractions';
 import { ISpinner } from '../interfaces';
 
 export class Logger extends BaseLogger {
+  public frames = ['- ', '\\ ', '| ', '/ '];
 
-  private frames = ['- ', '\\ ', '| ', '/ '];
+  public showSpinnerInFront = true;
+  public spinnerInterval = 80;
+
   private countLines = 1;
 
   public log(message: string, groupId?: string): void {
@@ -53,8 +56,11 @@ export class Logger extends BaseLogger {
     return setInterval(() => {
       this.cursorHide();
       const frame = this.frames[i = ++i % this.frames.length];
-      this.updateLog(`${this.getHeader(groupId)}${frame}${message}`, this.countLines - line);
-    }, 80);
+      const msg = this.showSpinnerInFront
+        ? `${this.getHeader(groupId)}${frame}${message}`
+        : `${this.getHeader(groupId)}${message}${frame}`;
+      this.updateLog(msg, this.countLines - line);
+    }, this.spinnerInterval);
   }
 
   private cursorShow(): void {
