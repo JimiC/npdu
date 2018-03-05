@@ -84,22 +84,25 @@ export class PackageFileManager extends BasePackageFileManager {
     if (!this._filePath && !filePath) {
       throw new Error('A path to the \'package.json\' file is required (:persist:)');
     }
-    if (!Object.keys(resolvedDependecies).length) {
+    if (!this._packageFileContent) {
+      throw new Error('Prior call to \'getDependencies\' is required');
+    }
+    if (!resolvedDependecies || !Object.keys(resolvedDependecies).length) {
       return;
     }
     if (this._logger) {
       this._logger.updateLog('Updating dependencies in \'package.json\'');
     }
-    if (resolvedDependecies.dependencies) {
+    if (this._packageFileContent.dependencies && resolvedDependecies.dependencies) {
       this._packageFileContent.dependencies = resolvedDependecies.dependencies;
     }
-    if (resolvedDependecies.devDependencies) {
+    if (this._packageFileContent.devDependencies && resolvedDependecies.devDependencies) {
       this._packageFileContent.devDependencies = resolvedDependecies.devDependencies;
     }
-    if (resolvedDependecies.peerDependencies) {
+    if (this._packageFileContent.peerDependencies && resolvedDependecies.peerDependencies) {
       this._packageFileContent.peerDependencies = resolvedDependecies.peerDependencies;
     }
-    if (resolvedDependecies.optionalDependencies) {
+    if (this._packageFileContent.optionalDependencies && resolvedDependecies.optionalDependencies) {
       this._packageFileContent.optionalDependencies = resolvedDependecies.optionalDependencies;
     }
     let data = JSON.stringify(this._packageFileContent, null, this._indentation.indent || this._indentation.amount);

@@ -1,26 +1,39 @@
 // tslint:disable only-arrow-functions
 // tslint:disable no-unused-expression
 import { expect } from 'chai';
+import { readFileSync } from 'fs';
 import https from 'https';
+import { join } from 'path';
 import sinon from 'sinon';
 import { PassThrough } from 'stream';
-import data from '../../../test/fixtures/response.json';
 import { Logger, RegistryManager } from '../../src/services';
+
+class FakeIncomingMessage extends PassThrough {
+  public headers: { [key: string]: any } = { 'content-type': 'application/json' };
+  public statusCode: number = 200;
+  public statusMessage: string = 'OK';
+  constructor(body) {
+    super();
+    this.write(body);
+    this.end();
+  }
+}
 
 describe('RegistryManager: tests', function () {
 
-  context('expects', function () {
+  let data: any;
 
-    class FakeIncomingMessage extends PassThrough {
-      public headers: { [key: string]: any } = { 'content-type': 'application/json' };
-      public statusCode: number = 200;
-      public statusMessage: string = 'OK';
-      constructor(body) {
-        super();
-        this.write(body);
-        this.end();
-      }
-    }
+  before(function () {
+    data = JSON.parse(readFileSync(join(__dirname,
+      process.argv[1].includes('mocha') ? '../../../' : '../../',
+      'test/fixtures/response.json'), 'utf8'));
+  });
+
+  after(function () {
+    data = null;
+  });
+
+  context('expects', function () {
 
     let manager: RegistryManager;
     let sandbox: sinon.SinonSandbox;
