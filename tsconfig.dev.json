@@ -1,20 +1,21 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "skipLibCheck": true,
-    "esModuleInterop": true,
     "alwaysStrict": true,
     "diagnostics": true,
-    "target": "es6",
-    "outDir": "out",
+    "esModuleInterop": true,
     "lib": [
       "es6"
     ],
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "newLine": "LF",
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "outDir": "out",
+    "rootDir": ".",
+    "skipLibCheck": true,
     "sourceMap": true,
-    "rootDir": "."
+    "target": "es6"
   },
   "include": [
     "src/**/*.ts",
