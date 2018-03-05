@@ -1,3 +1,4 @@
+import { IndentInfo } from 'detect-indent';
 import { BaseLogger, BasePackageFileManager } from '../abstractions';
 import { DependenciesFlags } from '../common/enumerations';
 import { IPackageDependencies } from '../interfaces';
@@ -15,7 +16,7 @@ export class PackageFileManager extends BasePackageFileManager {
   private _document: string;
   private _filePath: string;
   private _finalNewLine: { has: boolean; type: string; };
-  private _indentation: any;
+  private _indentation: IndentInfo;
   private _packageFileContent: IPackageDependencies;
 
   constructor(filePathOrDocument: string, private _logger?: BaseLogger) {

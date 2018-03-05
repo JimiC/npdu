@@ -1,6 +1,6 @@
-import detectIndent from 'detect-indent';
-import fs from 'fs';
-import path from 'path';
+import detectIndent = require('detect-indent');
+import { readFile, writeFile } from 'fs';
+import { basename } from 'path';
 import { DependenciesFlags } from '../common/enumerations';
 
 export const validUrlRegEx =
@@ -18,11 +18,11 @@ export const isNullOrUndefind = (obj: any, ...args: any[]): boolean => {
 };
 
 export const readFileAsync = (filePath: string, encoding = 'utf8'): Promise<string> => {
-  return new Promise((res, rej) => fs.readFile(filePath, encoding, (err, data) => err ? rej(err) : res(data)));
+  return new Promise((res, rej) => readFile(filePath, encoding, (err, data) => err ? rej(err) : res(data)));
 };
 
 export const writeFileAsync = (filePath: string, data: any): Promise<void> => {
-  return new Promise((res, rej) => fs.writeFile(filePath, data, err => err ? rej(err) : res()));
+  return new Promise((res, rej) => writeFile(filePath, data, err => err ? rej(err) : res()));
 };
 
 export const getFinalNewLine = (text: string): { has: boolean, type: string } => {
@@ -30,12 +30,12 @@ export const getFinalNewLine = (text: string): { has: boolean, type: string } =>
   return { has: !!eol, type: eol || '' };
 };
 
-export const getIndentation = (text: string): { amount: number, indent: string; type: string } => {
+export const getIndentation = (text: string): detectIndent.IndentInfo => {
   return detectIndent(text);
 };
 
 export const isValidPath = (filePath: string): boolean => {
-  return path.basename(filePath) === 'package.json';
+  return basename(filePath) === 'package.json';
 };
 
 export const getDependenciesFlagByKey = (key: string): DependenciesFlags => {
