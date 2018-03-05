@@ -1,6 +1,6 @@
 import { BaseLogger, BasePackageFileManager } from '../abstractions';
 import { DependenciesFlags } from '../common/enumerations';
-import { IDependencies, IPackageDependencies } from '../interfaces';
+import { IPackageDependencies } from '../interfaces';
 import {
   getDependenciesFlagByKey,
   getFinalNewLine,
@@ -18,31 +18,6 @@ export class PackageFileManager extends BasePackageFileManager {
   private _indentation: any;
   private _packageFileContent: IPackageDependencies;
 
-  public get allDependencies(): IPackageDependencies {
-    return {
-      dependencies: this.dependencies,
-      devDependencies: this.devDependencies,
-      optionalDependencies: this.optionalDependencies,
-      peerDependencies: this.peerDependencies,
-    };
-  }
-
-  public get dependencies(): IDependencies {
-    return this._packageFileContent.dependencies;
-  }
-
-  public get devDependencies(): IDependencies {
-    return this._packageFileContent.devDependencies;
-  }
-
-  public get peerDependencies(): IDependencies {
-    return this._packageFileContent.peerDependencies;
-  }
-
-  public get optionalDependencies(): IDependencies {
-    return this._packageFileContent.optionalDependencies;
-  }
-
   constructor(filePathOrDocument: string, private _logger?: BaseLogger) {
     super();
     if (isValidPath(filePathOrDocument)) {
@@ -57,24 +32,44 @@ export class PackageFileManager extends BasePackageFileManager {
       this._logger.updateLog('Getting dependencies of \'package.json\'');
     }
     if (!this._packageFileContent) {
-      await this._setDocument();
+      const document = this._filePath ? await readFileAsync(this._filePath) : this._document;
+      try {
+        this._packageFileContent = JSON.parse(document);
+      } catch (err) {
+        throw new Error('Only \'package.json\' files are supported (:getDependencies:)');
+      }
+      this._indentation = getIndentation(document);
+      this._finalNewLine = getFinalNewLine(document);
     }
     if (typeof flag === 'string') {
       flag = getDependenciesFlagByKey(flag);
     }
     switch (flag) {
       case DependenciesFlags.All:
-        return this.allDependencies;
+        {
+          const deps: IPackageDependencies = {};
+          if (this._packageFileContent.dependencies) {
+            deps.dependencies = this._packageFileContent.dependencies;
+          }
+          if (this._packageFileContent.devDependencies) {
+            deps.devDependencies = this._packageFileContent.devDependencies;
+          }
+          if (this._packageFileContent.peerDependencies) {
+            deps.peerDependencies = this._packageFileContent.peerDependencies;
+          }
+          if (this._packageFileContent.optionalDependencies) {
+            deps.optionalDependencies = this._packageFileContent.optionalDependencies;
+          }
+          return deps;
+        }
       case DependenciesFlags.Prod:
-        return { dependencies: this.dependencies };
+        return { dependencies: this._packageFileContent.dependencies };
       case DependenciesFlags.Dev:
-        return { devDependencies: this.devDependencies };
+        return { devDependencies: this._packageFileContent.devDependencies };
       case DependenciesFlags.Peer:
-        return { peerDependencies: this.peerDependencies };
+        return { peerDependencies: this._packageFileContent.peerDependencies };
       case DependenciesFlags.Optional:
-        return { optionalDependencies: this.optionalDependencies };
-      default:
-        throw new Error('Not Implemented (:getDependencies:)');
+        return { optionalDependencies: this._packageFileContent.optionalDependencies };
     }
   }
 
@@ -111,12 +106,5 @@ export class PackageFileManager extends BasePackageFileManager {
       data += this._finalNewLine.type;
     }
     return writeFileAsync(this._filePath || filePath, data);
-  }
-
-  private async _setDocument(): Promise<void> {
-    const document = this._filePath ? await readFileAsync(this._filePath) : this._document;
-    this._packageFileContent = typeof document === 'string' ? JSON.parse(document) : {};
-    this._indentation = getIndentation(document);
-    this._finalNewLine = getFinalNewLine(document);
   }
 }
