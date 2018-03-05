@@ -104,6 +104,16 @@ describe('Logger: tests', function () {
 
     });
 
+    let isTTY: true | undefined;
+
+    beforeEach(function () {
+      isTTY = process.stdout.isTTY;
+    });
+
+    afterEach(function () {
+      process.stdout.isTTY = isTTY;
+    });
+
     context('when calling function \'updateLog\'', function () {
 
       it('to display the \'groupId\' when provided',
@@ -116,68 +126,79 @@ describe('Logger: tests', function () {
 
       context('if the terminal', function () {
 
-        it('is TTY, the cursor moves',
-          function () {
-            sandbox.stub(process.stdout, 'isTTY').returns(true);
-            const writeStub = sandbox.stub(process.stdout, 'write');
-            const moveCursorSpy = sandbox.spy(readline, 'moveCursor');
-            const clearLineSpy = sandbox.spy(readline, 'clearLine');
-            logger.updateLog('test');
-            writeStub.restore();
-            expect(clearLineSpy.calledOnce).to.be.true;
-            expect(moveCursorSpy.calledTwice).to.be.true;
-            expect(moveCursorSpy.firstCall.calledWith(process.stdout, 0, -1)).to.be.true;
-            expect(moveCursorSpy.secondCall.calledWith(process.stdout, 0, 1)).to.be.true;
-            expect(writeStub.called).to.be.true;
+        context('is TTY', function () {
+
+          context('the cursor moves', function () {
+
+            it('and returns to the original lines',
+              function () {
+                process.stdout.isTTY = true;
+                const writeStub = sandbox.stub(process.stdout, 'write');
+                const moveCursorSpy = sandbox.spy(readline, 'moveCursor');
+                const clearLineSpy = sandbox.spy(readline, 'clearLine');
+                logger.updateLog('test');
+                writeStub.restore();
+                expect(clearLineSpy.calledOnce).to.be.true;
+                expect(moveCursorSpy.calledTwice).to.be.true;
+                expect(moveCursorSpy.firstCall.calledWith(process.stdout, 0, -1)).to.be.true;
+                expect(moveCursorSpy.secondCall.calledWith(process.stdout, 0, 1)).to.be.true;
+                expect(writeStub.called).to.be.true;
+              });
+
+            it('one line when no line parameter is provided',
+              function () {
+                process.stdout.isTTY = true;
+                const stub = sandbox.stub(process.stdout, 'write');
+                const moveCursorSpy = sandbox.spy(readline, 'moveCursor');
+                logger.updateLog('test');
+                stub.restore();
+                expect(moveCursorSpy.calledWith(process.stdout, 0, -1)).to.be.true;
+                expect(moveCursorSpy.calledWith(process.stdout, 0, 1)).to.be.true;
+              });
+
+            it('that much lines when line parameter is provided',
+              function () {
+                process.stdout.isTTY = true;
+                const stub = sandbox.stub(process.stdout, 'write');
+                const moveCursorSpy = sandbox.spy(readline, 'moveCursor');
+                logger.updateLog('test', 5);
+                stub.restore();
+                expect(moveCursorSpy.calledWith(process.stdout, 0, -5)).to.be.true;
+                expect(moveCursorSpy.calledWith(process.stdout, 0, 5)).to.be.true;
+              });
+
+            it('that much lines and groupdId is displayed when both are provided',
+              function () {
+                process.stdout.isTTY = true;
+                const stub = sandbox.stub(process.stdout, 'write');
+                const moveCursorSpy = sandbox.spy(readline, 'moveCursor');
+                logger.updateLog('test', 5, 'Mocha');
+                stub.restore();
+                expect(stub.calledWith('[Mocha]: test\n')).to.be.true;
+                expect(moveCursorSpy.calledWith(process.stdout, 0, -5)).to.be.true;
+                expect(moveCursorSpy.calledWith(process.stdout, 0, 5)).to.be.true;
+              });
+
           });
 
-        it.skip('is not TTY, the cursor does not move',
-          function () {
-            sandbox.stub(process.stdout, 'isTTY').returns(true);
-            const writeStub = sandbox.stub(process.stdout, 'write');
-            const moveCursorSpy = sandbox.spy(readline, 'moveCursor');
-            const clearLineSpy = sandbox.spy(readline, 'clearLine');
-            logger.updateLog('test');
-            writeStub.restore();
-            expect(clearLineSpy.called).to.be.false;
-            expect(moveCursorSpy.called).to.be.false;
-            expect(writeStub.called).to.be.true;
-          });
+        });
 
-      });
+        context('is not TTY', function () {
 
-      context('the cursor moves', function () {
+          it('the cursor does not move',
+            function () {
+              process.stdout.isTTY = undefined;
+              const writeStub = sandbox.stub(process.stdout, 'write');
+              const moveCursorSpy = sandbox.spy(readline, 'moveCursor');
+              const clearLineSpy = sandbox.spy(readline, 'clearLine');
+              logger.updateLog('test');
+              writeStub.restore();
+              expect(clearLineSpy.called).to.be.false;
+              expect(moveCursorSpy.called).to.be.false;
+              expect(writeStub.called).to.be.true;
+            });
 
-        it('one line when no line parameter is provided',
-          function () {
-            const stub = sandbox.stub(process.stdout, 'write');
-            const moveCursorSpy = sandbox.spy(readline, 'moveCursor');
-            logger.updateLog('test');
-            stub.restore();
-            expect(moveCursorSpy.calledWith(process.stdout, 0, -1)).to.be.true;
-            expect(moveCursorSpy.calledWith(process.stdout, 0, 1)).to.be.true;
-          });
-
-        it('that much lines when line parameter is provided',
-          function () {
-            const stub = sandbox.stub(process.stdout, 'write');
-            const moveCursorSpy = sandbox.spy(readline, 'moveCursor');
-            logger.updateLog('test', 5);
-            stub.restore();
-            expect(moveCursorSpy.calledWith(process.stdout, 0, -5)).to.be.true;
-            expect(moveCursorSpy.calledWith(process.stdout, 0, 5)).to.be.true;
-          });
-
-        it('that much lines and groupdId is displayed when both are provided',
-          function () {
-            const stub = sandbox.stub(process.stdout, 'write');
-            const moveCursorSpy = sandbox.spy(readline, 'moveCursor');
-            logger.updateLog('test', 5, 'Mocha');
-            stub.restore();
-            expect(stub.calledWith('[Mocha]: test\n')).to.be.true;
-            expect(moveCursorSpy.calledWith(process.stdout, 0, -5)).to.be.true;
-            expect(moveCursorSpy.calledWith(process.stdout, 0, 5)).to.be.true;
-          });
+        });
 
       });
 
@@ -203,7 +224,7 @@ describe('Logger: tests', function () {
 
             it('before the message',
               function () {
-                sandbox.stub(process.stdout, 'isTTY').returns(true);
+                process.stdout.isTTY = true;
                 const stub = sandbox.stub(process.stdout, 'write');
                 const logSpy = sandbox.spy(logger, 'log');
                 const updateLogSpy = sandbox.spy(logger, 'updateLog');
@@ -221,7 +242,7 @@ describe('Logger: tests', function () {
 
             it('and the \'groupId\' when provided',
               function () {
-                sandbox.stub(process.stdout, 'isTTY').returns(true);
+                process.stdout.isTTY = true;
                 const stub = sandbox.stub(process.stdout, 'write');
                 const logSpy = sandbox.spy(logger, 'log');
                 const updateLogSpy = sandbox.spy(logger, 'updateLog');
@@ -239,7 +260,7 @@ describe('Logger: tests', function () {
 
             it('after the message',
               function () {
-                sandbox.stub(process.stdout, 'isTTY').returns(true);
+                process.stdout.isTTY = true;
                 logger.showSpinnerInFront = false;
                 const stub = sandbox.stub(process.stdout, 'write');
                 const logSpy = sandbox.spy(logger, 'log');
@@ -258,7 +279,7 @@ describe('Logger: tests', function () {
 
             it('and the \'groupId\' when provided',
               function () {
-                sandbox.stub(process.stdout, 'isTTY').returns(true);
+                process.stdout.isTTY = true;
                 logger.showSpinnerInFront = false;
                 const stub = sandbox.stub(process.stdout, 'write');
                 const logSpy = sandbox.spy(logger, 'log');
@@ -280,9 +301,9 @@ describe('Logger: tests', function () {
 
         context('is not TTY', function () {
 
-          it.skip('to not display the spinner',
+          it('to not display the spinner',
             function () {
-              sandbox.stub(process.stdout, 'isTTY').returns(false);
+              process.stdout.isTTY = undefined;
               const stub = sandbox.stub(process.stdout, 'write');
               const logSpy = sandbox.spy(logger, 'log');
               const updateLogSpy = sandbox.spy(logger, 'updateLog');
@@ -305,6 +326,7 @@ describe('Logger: tests', function () {
 
       it('the spinner to be stopped',
         function () {
+          process.stdout.isTTY = true;
           const stub = sandbox.stub(process.stdout, 'write');
           const updateLogSpy = sandbox.spy(logger, 'updateLog');
           const spinner = logger.spinnerLogStart('test start');
@@ -318,6 +340,7 @@ describe('Logger: tests', function () {
 
       it('to display the \'groupId\' when provided',
         function () {
+          process.stdout.isTTY = true;
           const stub = sandbox.stub(process.stdout, 'write');
           const updateLogSpy = sandbox.spy(logger, 'updateLog');
           const spinner = logger.spinnerLogStart('test start');
