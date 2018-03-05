@@ -16,7 +16,7 @@ module.exports = (wallaby) => ({
     "test/**/*.test.ts"
   ],
   filesWithNoCoverageCalculated: [
-    "src/*.ts"
+    "src/cli.ts"
   ],
   hints: {
     ignoreCoverage: /wallaby:ignore next/
