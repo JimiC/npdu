@@ -35,7 +35,7 @@ export const getIndentation = (text: string): { amount: number, indent: string; 
 };
 
 export const isValidPath = (filePath: string): boolean => {
-  return filePath.includes(path.sep) || !!path.parse(filePath).ext;
+  return path.basename(filePath) === 'package.json';
 };
 
 export const getDependenciesFlagByKey = (key: string): DependenciesFlags => {
