@@ -31,4 +31,5 @@ module.exports = (wallaby) => ({
   },
   debug: true,
   reportConsoleErrorAsError: true,
+  setup: (wallaby) => wallaby.testFramework.ui('bdd')
 });

@@ -324,33 +324,57 @@ describe('Logger: tests', function () {
 
     context('when calling function \'spinnerLogStop\'', function () {
 
-      it('the spinner to be stopped',
-        function () {
-          process.stdout.isTTY = true;
-          const stub = sandbox.stub(process.stdout, 'write');
-          const updateLogSpy = sandbox.spy(logger, 'updateLog');
-          const spinner = logger.spinnerLogStart('test start');
-          timer.tick(logger.spinnerInterval);
-          logger.spinnerLogStop(spinner, 'test end');
-          stub.restore();
-          expect(updateLogSpy.calledTwice).to.be.true;
-          expect(updateLogSpy.secondCall.calledWith('test end', 1)).to.be.true;
-          expect(stub.calledWith('\u001B[?25h')).to.be.true;
+      context('if the terminal', function () {
+
+        context('is TTY', function () {
+
+          it('the spinner to be stopped',
+            function () {
+              process.stdout.isTTY = true;
+              const stub = sandbox.stub(process.stdout, 'write');
+              const updateLogSpy = sandbox.spy(logger, 'updateLog');
+              const spinner = logger.spinnerLogStart('test start');
+              timer.tick(logger.spinnerInterval);
+              logger.spinnerLogStop(spinner, 'test end');
+              stub.restore();
+              expect(updateLogSpy.calledTwice).to.be.true;
+              expect(updateLogSpy.secondCall.calledWith('test end', 1)).to.be.true;
+              expect(stub.calledWith('\u001B[?25h')).to.be.true;
+            });
+
+          it('to display the \'groupId\' when provided',
+            function () {
+              process.stdout.isTTY = true;
+              const stub = sandbox.stub(process.stdout, 'write');
+              const updateLogSpy = sandbox.spy(logger, 'updateLog');
+              const spinner = logger.spinnerLogStart('test start');
+              timer.tick(logger.spinnerInterval);
+              logger.spinnerLogStop(spinner, 'test end', 'Mocha');
+              stub.restore();
+              expect(updateLogSpy.calledTwice).to.be.true;
+              expect(updateLogSpy.secondCall.calledWith('test end', 1, 'Mocha')).to.be.true;
+              expect(stub.calledWith('\u001B[?25h')).to.be.true;
+            });
+
         });
 
-      it('to display the \'groupId\' when provided',
-        function () {
-          process.stdout.isTTY = true;
-          const stub = sandbox.stub(process.stdout, 'write');
-          const updateLogSpy = sandbox.spy(logger, 'updateLog');
-          const spinner = logger.spinnerLogStart('test start');
-          timer.tick(logger.spinnerInterval);
-          logger.spinnerLogStop(spinner, 'test end', 'Mocha');
-          stub.restore();
-          expect(updateLogSpy.calledTwice).to.be.true;
-          expect(updateLogSpy.secondCall.calledWith('test end', 1, 'Mocha')).to.be.true;
-          expect(stub.calledWith('\u001B[?25h')).to.be.true;
+        context('is not TTY', function () {
+
+          it('the cursor indicatior does not change',
+            function () {
+              process.stdout.isTTY = undefined;
+              const stub = sandbox.stub(process.stdout, 'write');
+              const spinner = logger.spinnerLogStart('test start');
+              timer.tick(logger.spinnerInterval);
+              logger.spinnerLogStop(spinner, 'test end', 'Mocha');
+              stub.restore();
+              expect(stub.calledWith('\u001B[?25l')).to.be.false;
+              expect(stub.calledWith('\u001B[?25h')).to.be.false;
+            });
+
         });
+
+      });
 
     });
 

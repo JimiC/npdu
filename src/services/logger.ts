@@ -47,14 +47,15 @@ export class Logger extends BaseLogger {
   public spinnerLogStop(spinner: ISpinner, message?: string, groupId?: string): void {
     clearInterval(spinner.timer);
     this.updateLog(message, this.countLines - spinner.line, groupId);
+    if (!process.stdout.isTTY) { return; }
     this.cursorShow();
   }
 
   private spin(message: string, groupId?: string, line?: number): NodeJS.Timer {
     if (!process.stdout.isTTY) { return; }
     let i = 0;
+    this.cursorHide();
     return setInterval(() => {
-      this.cursorHide();
       const frame = this.frames[i = ++i % this.frames.length];
       const msg = this.showSpinnerInFront
         ? `${this.getHeader(groupId)}${frame}${message}`
@@ -64,12 +65,10 @@ export class Logger extends BaseLogger {
   }
 
   private cursorShow(): void {
-    if (!process.stdout.isTTY) { return; }
     process.stdout.write('\u001B[?25h');
   }
 
   private cursorHide(): void {
-    if (!process.stdout.isTTY) { return; }
     process.stdout.write('\u001B[?25l');
   }
 
