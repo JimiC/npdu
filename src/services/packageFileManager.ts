@@ -87,7 +87,7 @@ export class PackageFileManager extends BasePackageFileManager {
     if (!this._packageFileContent) {
       throw new Error('Prior call to \'getDependencies\' is required');
     }
-    if (!resolvedDependecies || !Object.keys(resolvedDependecies).length) {
+    if (!resolvedDependecies || !Reflect.ownKeys(resolvedDependecies).length) {
       return;
     }
     if (this._logger) {

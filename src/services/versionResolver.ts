@@ -26,15 +26,17 @@ export class VersionResolver extends BaseVersionResolver {
       }
       const currentVersion = packages[packageName];
       const newVersion = await this._findNewVersion(packageName, this._options.strategy, currentVersion);
-      if (newVersion && currentVersion !== newVersion) {
-        const depends = this._getDependenciesOfPackage(dependencies, packageName);
-        depends[packageName] = newVersion;
-        if (this._logger) {
-          this._logger.updateLog(`Found new version: '${newVersion}' for package: '${packageName}'`);
-        }
-      } else {
-        if (this._logger) {
-          this._logger.updateLog(`Package: '${packageName}' is already up-to-date (${this._options.strategy})`);
+      if (newVersion) {
+        if (currentVersion !== newVersion) {
+          const depends = this._getDependenciesOfPackage(dependencies, packageName);
+          depends[packageName] = newVersion;
+          if (this._logger) {
+            this._logger.updateLog(`Found new version: '${newVersion}' for package: '${packageName}'`);
+          }
+        } else {
+          if (this._logger) {
+            this._logger.updateLog(`Package: '${packageName}' is already up-to-date (${this._options.strategy})`);
+          }
         }
       }
     }
@@ -49,7 +51,7 @@ export class VersionResolver extends BaseVersionResolver {
 
   private async _findNewVersion(packageName: string, strategy: string, currentVersion: string): Promise<string> {
     const info: INodePackage = await this._registryManager.getPackageInfo(packageName);
-    if (!info) {
+    if (!info || !Reflect.ownKeys(info).length) {
       if (this._logger) {
         this._logger.updateLog(`Unable to get package info of '${packageName}' from registry`);
       }
@@ -73,7 +75,7 @@ export class VersionResolver extends BaseVersionResolver {
   }
 
   private _getRange(newVersion: string, currentVersion: string): string {
-    if (!newVersion) { return currentVersion; }
+    if (!newVersion || newVersion === currentVersion) { return currentVersion; }
     if (!this._options.keepRange) { return newVersion; }
     // TODO: Implement other range cases
     return currentVersion.replace(/[0-9.]+-*[a-zA-Z0-9]*/g, newVersion);

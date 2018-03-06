@@ -10,8 +10,8 @@ import * as utils from '../../src/utils';
 
 describe('PackageFileManager: tests', function () {
 
-  let manager: PackageFileManager;
   let sandbox: sinon.SinonSandbox;
+  let manager: PackageFileManager;
   let packageJson: any;
 
   before(function () {
@@ -50,7 +50,8 @@ describe('PackageFileManager: tests', function () {
           const logger = sandbox.createStubInstance(Logger);
           manager = new PackageFileManager('{}', logger);
           await manager.getDependencies('all');
-          expect(logger.updateLog.called).to.be.true;
+          const stub: sinon.SinonStub = logger.updateLog;
+          expect(stub.called).to.be.true;
         });
 
       context('to throw an Error', function () {
@@ -236,7 +237,8 @@ describe('PackageFileManager: tests', function () {
           manager = new PackageFileManager('./package.json', logger);
           const resolvedDependencies = await manager.getDependencies('all');
           await manager.persist(resolvedDependencies);
-          expect(logger.updateLog.called).to.be.true;
+          const stub: sinon.SinonStub = logger.updateLog;
+          expect(stub.called).to.be.true;
         });
 
       it('when passing a function as \'resolvedDependencies\', that function gets called',

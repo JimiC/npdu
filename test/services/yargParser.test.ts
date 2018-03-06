@@ -7,9 +7,9 @@ import { validUrlRegEx } from '../../src/utils';
 
 describe('YargsParser: tests', function () {
 
-  let parser: YargsParser;
   let sandbox: sinon.SinonSandbox;
   let argv: sinon.SinonStub;
+  let parser: YargsParser;
 
   beforeEach(function () {
     sandbox = sinon.createSandbox();
@@ -132,7 +132,8 @@ describe('YargsParser: tests', function () {
         function () {
           argv.value(['node', 'npdu', 'all', '-r', 'http://some.registry.org']);
           parser.parse();
-          expect(logger.log.calledWith('Using provided registry: \'http://some.registry.org\'')).to.be.true;
+          const stub: sinon.SinonStub = logger.log;
+          expect(stub.calledWith('Using provided registry: \'http://some.registry.org\'')).to.be.true;
         });
 
       it('it logs the Error messages to the terminal',
@@ -142,7 +143,8 @@ describe('YargsParser: tests', function () {
           const exitStub = sandbox.stub(process, 'exit');
           argv.value(['node', 'npdu', 'all', '-f', 'file.io']);
           parser.parse();
-          expect(logger.error.called).to.be.true;
+          const stub: sinon.SinonStub = logger.error;
+          expect(stub.called).to.be.true;
           stderrStub.restore();
           consoleErrorStub.restore();
           exitStub.restore();

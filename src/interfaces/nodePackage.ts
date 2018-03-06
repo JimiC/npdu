@@ -1,7 +1,7 @@
 export interface INodePackage {
-  name: string;
+  name?: string;
   version?: string;
-  versions?: INodePackage[];
+  versions?: { [key: string]: INodePackage };
   'dist-tags'?: { [key: string]: string };
   error?: string;
   reason?: string;

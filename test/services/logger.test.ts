@@ -7,8 +7,8 @@ import { Logger } from '../../src/services';
 
 describe('Logger: tests', function () {
 
-  let logger: Logger;
   let sandbox: sinon.SinonSandbox;
+  let logger: Logger;
 
   beforeEach(function () {
     sandbox = sinon.createSandbox();

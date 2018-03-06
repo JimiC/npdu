@@ -35,8 +35,8 @@ describe('RegistryManager: tests', function () {
 
   context('expects', function () {
 
-    let manager: RegistryManager;
     let sandbox: sinon.SinonSandbox;
+    let manager: RegistryManager;
 
     beforeEach(function () {
       sandbox = sinon.createSandbox();
@@ -89,7 +89,8 @@ describe('RegistryManager: tests', function () {
           request.yields(new FakeIncomingMessage(JSON.stringify(data)));
           manager = new RegistryManager('https://some.registry.yz', logger);
           await manager.getPackageInfo('@types/node');
-          expect(logger.updateLog.called).to.be.true;
+          const stub: sinon.SinonStub = logger.updateLog;
+          expect(stub.called).to.be.true;
         });
 
       it('to get the package info from the registry (JSON)',
