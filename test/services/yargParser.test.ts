@@ -76,27 +76,37 @@ describe('YargsParser: tests', function () {
 
       it('gets parsed correctly',
         function () {
+          const consoleLogStub = sandbox.stub(console, 'log');
+          const stdoutStub = sandbox.stub(process.stdout, 'write');
           const args = ['node', 'npdu', 'all', '-r', 'http://myregistry.yz'];
           argv.value(args);
           expect(parser.parse()).to.be.have.property('registry', args[4]);
+          stdoutStub.restore();
+          consoleLogStub.restore();
         });
 
       it('supports valid URL',
         function () {
+          const consoleLogStub = sandbox.stub(console, 'log');
+          const stdoutStub = sandbox.stub(process.stdout, 'write');
           argv.value(['node', 'npdu', 'all', '-r', 'https://my.registry.yz']);
           expect(parser.parse().registry).to.match(validUrlRegEx);
           argv.value(['node', 'npdu', 'prod', '-r', 'http://myregistry.yz']);
           expect(parser.parse().registry).to.match(validUrlRegEx);
+          stdoutStub.restore();
+          consoleLogStub.restore();
         });
 
       it('throws an Error on invalid URL',
         function () {
           const consoleErrorStub = sandbox.stub(console, 'error');
+          const stderrStub = sandbox.stub(process.stderr, 'write');
           const exitStub = sandbox.stub(process, 'exit');
           argv.value(['node', 'npdu', 'all', '-r', '//my.registry.yz']);
           parser.parse();
           expect(consoleErrorStub.called).to.be.true;
           expect(exitStub.called).to.be.true;
+          stderrStub.restore();
           consoleErrorStub.restore();
           exitStub.restore();
         });
@@ -106,11 +116,13 @@ describe('YargsParser: tests', function () {
     it('to throw an Error on invalid file path',
       function () {
         const consoleErrorStub = sandbox.stub(console, 'error');
+        const stderrStub = sandbox.stub(process.stderr, 'write');
         const exitStub = sandbox.stub(process, 'exit');
         argv.value(['node', 'npdu', 'all', '-f', 'file.io']);
         parser.parse();
         expect(consoleErrorStub.called).to.be.true;
         expect(exitStub.called).to.be.true;
+        stderrStub.restore();
         consoleErrorStub.restore();
         exitStub.restore();
       });
@@ -130,10 +142,14 @@ describe('YargsParser: tests', function () {
 
       it('it logs a message for the provided registry',
         function () {
+          const consoleLogStub = sandbox.stub(console, 'log');
+          const stdoutStub = sandbox.stub(process.stdout, 'write');
           argv.value(['node', 'npdu', 'all', '-r', 'http://some.registry.org']);
           parser.parse();
           const stub: sinon.SinonStub = logger.log;
           expect(stub.calledWith('Using provided registry: \'http://some.registry.org\'')).to.be.true;
+          stdoutStub.restore();
+          consoleLogStub.restore();
         });
 
       it('it logs the Error messages to the terminal',
