@@ -3,8 +3,9 @@ import { BaseLogger } from '../abstractions';
 import { ISpinner } from '../interfaces';
 
 export class Logger extends BaseLogger {
-  public frames = ['- ', '\\ ', '| ', '/ '];
 
+  public eventEmitter = readline.createInterface(process.stdin, process.stdout);
+  public frames = ['- ', '\\ ', '| ', '/ '];
   public showSpinnerInFront = true;
   public spinnerInterval = 80;
 
@@ -49,6 +50,23 @@ export class Logger extends BaseLogger {
     this.updateLog(message, this.countLines - spinner.line, groupId);
     if (!process.stdout.isTTY) { return; }
     this.cursorShow();
+  }
+
+  public handleForcedExit(hasInfoLogging: boolean): void {
+    if (!process.stdout.isTTY) { return process.exit(); }
+    const moveAndClear = () => {
+      readline.moveCursor(process.stdout, 0, -1);
+      readline.clearLine(process.stdout, 0);
+    };
+    readline.clearLine(process.stdout, 0);
+    this.updateLog('');
+    if (hasInfoLogging) {
+      this.updateLog('', 2);
+      moveAndClear();
+    }
+    moveAndClear();
+    this.cursorShow();
+    process.exit();
   }
 
   private spin(message: string, groupId?: string, line?: number): NodeJS.Timer {

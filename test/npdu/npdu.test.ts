@@ -1,6 +1,8 @@
 // tslint:disable only-arrow-functions
 // tslint:disable no-unused-expression
 import { expect } from 'chai';
+import { EventEmitter } from 'events';
+import readline from 'readline';
 import sinon from 'sinon';
 import { IParsedArgs } from '../../src/interfaces';
 import npdu from '../../src/npdu';
@@ -133,6 +135,26 @@ describe('CLI: tests', function () {
           expect(vrResolveStub.calledOnce).to.be.true;
           stdoutStub.restore();
           consoleLogStub.restore();
+        });
+
+    });
+
+    context('when signaled to exit', function () {
+
+      it('to call \'handleForcedExit\'',
+        function () {
+          const emitter = new EventEmitter();
+          const consoleLogStub = sandbox.stub(console, 'log');
+          const stdoutStub = sandbox.stub(process.stdout, 'write');
+          const handleForcedExitStub = sandbox.stub(Logger.prototype, 'handleForcedExit');
+          sandbox.stub(readline, 'createInterface').returns(emitter);
+          const promise = npdu().then(() => {
+            expect(handleForcedExitStub.called).to.be.true;
+            consoleLogStub.restore();
+            stdoutStub.restore();
+          });
+          emitter.emit('SIGINT');
+          return promise;
         });
 
     });
