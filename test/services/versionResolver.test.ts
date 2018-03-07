@@ -24,11 +24,7 @@ describe('VersionResolver: tests', function () {
     packageJson = { dependencies: { '@types/node': '^8.0.0' } };
     data = {
       'dist-tags': { latest: '9.4.6' },
-      'versions': {
-        '8.9.2': { name: `${packageName}` },
-        '8.9.3': { name: `${packageName}` },
-        '8.9.4': { name: `${packageName}` },
-      },
+      'versions': { '8.9.2': {}, '8.9.3': {}, '8.9.4': {} },
     };
     sandbox.stub(registryManager, 'getPackageInfo').resolves(data);
   });

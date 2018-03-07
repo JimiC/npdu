@@ -2,7 +2,6 @@
 // tslint:disable no-unused-expression
 import { expect } from 'chai';
 import https from 'https';
-import { join } from 'path';
 import sinon from 'sinon';
 import { PassThrough } from 'stream';
 import { Logger, RegistryManager } from '../../src/services';
@@ -20,33 +19,32 @@ class FakeIncomingMessage extends PassThrough {
 
 describe('RegistryManager: tests', function () {
 
+  let sandbox: sinon.SinonSandbox;
+  let manager: RegistryManager;
   let data: any;
 
   before(function () {
-    /* istanbul ignore next */
-    data = require(join(__dirname,
-      process.argv[1].includes('wallaby') ? '../../' : '../../../',
-      'test/fixtures/response.json'));
+    data = {
+      'dist-tags': { latest: '9.4.6' },
+      'versions': { '8.9.2': {}, '8.9.3': {}, '8.9.4': {} },
+    };
   });
 
   after(function () {
     data = null;
   });
 
+  beforeEach(function () {
+    sandbox = sinon.createSandbox();
+    manager = new RegistryManager('https://some.registry.yz');
+  });
+
+  afterEach(function () {
+    manager = null;
+    sandbox.restore();
+  });
+
   context('expects', function () {
-
-    let sandbox: sinon.SinonSandbox;
-    let manager: RegistryManager;
-
-    beforeEach(function () {
-      sandbox = sinon.createSandbox();
-      manager = new RegistryManager('https://some.registry.yz');
-    });
-
-    afterEach(function () {
-      manager = null;
-      sandbox.restore();
-    });
 
     it('to correctly implement BaseRegistryManager',
       function () {
@@ -103,8 +101,7 @@ describe('RegistryManager: tests', function () {
 
       it('to get the package info from the registry (Buffer)',
         async function () {
-          const response = new FakeIncomingMessage(Buffer.from(JSON.stringify(data)));
-          request.yields(response);
+          request.yields(new FakeIncomingMessage(Buffer.from(JSON.stringify(data))));
           const result = await manager.getPackageInfo('@types/node');
           expect(request.calledOnce).to.be.true;
           expect(result).to.deep.equal(data);

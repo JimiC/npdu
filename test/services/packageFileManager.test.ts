@@ -1,7 +1,6 @@
 // tslint:disable only-arrow-functions
 // tslint:disable no-unused-expression
 import { expect } from 'chai';
-import { join } from 'path';
 import sinon from 'sinon';
 import { DependenciesFlags } from '../../src/common/enumerations';
 import { Logger, PackageFileManager } from '../../src/services';
@@ -14,10 +13,18 @@ describe('PackageFileManager: tests', function () {
   let packageJson: any;
 
   before(function () {
-    /* istanbul ignore next */
-    packageJson = require(join(__dirname,
-      process.argv[1].includes('wallaby') ? '../../' : '../../../',
-      'test/fixtures/package.test.json'));
+    packageJson = {
+      dependencies: {
+        'detect-indent': '^5.0.0',
+        'semver': '^5.5.0',
+      },
+      devDependencies: {
+        '@types/chai': '^4.1.2',
+        'chai': '^4.1.2',
+      },
+      optionalDependencies: {},
+      peerDependencies: {},
+    };
   });
 
   after(function () {
