@@ -36,20 +36,16 @@
   "types": "lib/npdu.d.ts",
   "scripts": {
     "start": "node ./out/src/cli.js",
-    "prebuild:dev": "npm run prebuild",
-    "build:dev": "npm run test",
-    "precompile:dev": "npm run precompile",
-    "compile:dev": "tsc -p tsconfig.dev.json",
-    "compile:w": "npm run compile:dev -- -w",
-    "prebuild": "npm run lint",
-    "build": "npm run compile",
-    "precompile": "rimraf ./out",
-    "compile": "tsc",
     "lint": "tslint -p .",
-    "pretest": "rimraf ./.nyc_output ./coverage && npm run compile:dev",
+    "prebuild:dev": "npm run prebuild",
+    "build:dev": "tsc -p tsconfig.dev.json",
+    "prebuild": "npm run cleanUp && npm run lint",
+    "build": "tsc",
+    "cleanUp": "rimraf ./.nyc_output ./coverage ./out ./lib",
+    "pretest": "npm run cleanUp && npm run build:dev",
     "test": "nyc -c -x '' mocha ./out/test",
     "posttest": "nyc report -r lcov",
-    "prepublishOnly": "rimraf ./lib && npm run build && cpx 'out/src/**/*' lib"
+    "prepublishOnly": "npm run cleanUp && npm run build && cpx 'out/src/**/*' lib"
   },
   "dependencies": {
     "detect-indent": "^5.0.0",
