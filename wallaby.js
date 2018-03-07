@@ -1,16 +1,8 @@
 module.exports = (wallaby) => ({
   files: [
     "src/**/*.ts",
-    {
-      "pattern": "test/fixtures/*.json",
-      "instrument": false,
-      "load": false
-    },
-    {
-      "pattern": "./package.json",
-      "instrument": true,
-      "load": false
-    }
+    "test/fixtures/*.json",
+    "package.json"
   ],
   tests: [
     "test/**/*.test.ts"
@@ -19,7 +11,7 @@ module.exports = (wallaby) => ({
     "src/cli.ts"
   ],
   hints: {
-    ignoreCoverage: /wallaby:ignore next/
+    ignoreCoverage: /\/* wallaby ignore next\/*/
   },
   testFramework: "mocha",
   env: {

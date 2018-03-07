@@ -20,6 +20,7 @@ export class VersionResolver extends BaseVersionResolver {
   public async resolve(dependencies: IPackageDependencies): Promise<IPackageDependencies> {
     const packages = this._getAggregatedDependencies(dependencies);
     for (const packageName in packages) {
+      /* istanbul ignore next */ /* wallaby ignore next */
       if (!Reflect.has(packages, packageName)) { continue; }
       if (this._logger) {
         this._logger.updateLog(`Resolving version of package: '${packageName}'`);

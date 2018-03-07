@@ -1,7 +1,6 @@
 // tslint:disable only-arrow-functions
 // tslint:disable no-unused-expression
 import { expect } from 'chai';
-import { readFileSync } from 'fs';
 import https from 'https';
 import { join } from 'path';
 import sinon from 'sinon';
@@ -24,9 +23,10 @@ describe('RegistryManager: tests', function () {
   let data: any;
 
   before(function () {
-    data = JSON.parse(readFileSync(join(__dirname,
-      process.argv[1].includes('mocha') ? '../../../' : '../../',
-      'test/fixtures/response.json'), 'utf8'));
+    /* istanbul ignore next */
+    data = require(join(__dirname,
+      process.argv[1].includes('wallaby') ? '../../' : '../../../',
+      'test/fixtures/response.json'));
   });
 
   after(function () {

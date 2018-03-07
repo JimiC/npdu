@@ -52,11 +52,18 @@ describe('VersionResolver: tests', function () {
 
     context('function \'resolve\'', function () {
 
+      beforeEach(function () {
+        resolver = new VersionResolver(options, registryManager);
+      });
+
+      afterEach(function () {
+        resolver = null;
+      });
+
       it('to not change the version when unable to get the package info',
         async function () {
           delete data['dist-tags'];
           delete data.versions;
-          resolver = new VersionResolver(options, registryManager);
           const result = await resolver.resolve(packageJson);
           expect(data['dist-tags']).to.be.undefined;
           expect(data.versions).to.be.undefined;
@@ -66,7 +73,6 @@ describe('VersionResolver: tests', function () {
       it('to throw an Error when provided strategy is not supported',
         async function () {
           try {
-            resolver = new VersionResolver(options, registryManager);
             await resolver.resolve(packageJson);
           } catch (err) {
             expect(err).to.be.an.instanceof(Error);
@@ -136,12 +142,10 @@ describe('VersionResolver: tests', function () {
 
         beforeEach(function () {
           options.strategy = 'semver';
-          resolver = new VersionResolver(options, registryManager);
         });
 
         afterEach(function () {
           options = null;
-          resolver = null;
         });
 
         it('the current version when \'versions\' info is absent',
@@ -189,12 +193,10 @@ describe('VersionResolver: tests', function () {
 
         beforeEach(function () {
           options.strategy = 'latest';
-          resolver = new VersionResolver(options, registryManager);
         });
 
         afterEach(function () {
           options = null;
-          resolver = null;
         });
 
         it('the latest version when \'versions\' info is absent',

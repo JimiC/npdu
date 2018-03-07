@@ -1,7 +1,6 @@
 // tslint:disable only-arrow-functions
 // tslint:disable no-unused-expression
 import { expect } from 'chai';
-import { readFileSync } from 'fs';
 import { join } from 'path';
 import sinon from 'sinon';
 import { DependenciesFlags } from '../../src/common/enumerations';
@@ -15,9 +14,10 @@ describe('PackageFileManager: tests', function () {
   let packageJson: any;
 
   before(function () {
-    packageJson = JSON.parse(readFileSync(join(__dirname,
-      process.argv[1].includes('mocha') ? '../../../' : '../../',
-      'test/fixtures/package.test.json'), 'utf8'));
+    /* istanbul ignore next */
+    packageJson = require(join(__dirname,
+      process.argv[1].includes('wallaby') ? '../../' : '../../../',
+      'test/fixtures/package.test.json'));
   });
 
   after(function () {
