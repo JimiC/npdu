@@ -9,26 +9,26 @@ import * as utils from '../../src/utils';
 
 describe('Utils: tests', function () {
 
+  let data: any;
+
+  beforeEach(function () {
+    data = {
+
+      obj1: {
+        obj2: {
+          obj3: 'just',
+        },
+      },
+      obj4: 'another',
+      obj5: 'test',
+    };
+  });
+
   context('expects', function () {
 
-    let data: any;
+    context('function \'isNullOrUndefind\'', function () {
 
-    beforeEach(function () {
-      data = {
-
-        obj1: {
-          obj2: {
-            obj3: 'just',
-          },
-        },
-        obj4: 'another',
-        obj5: 'test',
-      };
-    });
-
-    context('function \'isNullOrUndefind\' to return', function () {
-
-      it('\'true\', when object path results to \'null\' or \'undefined\'',
+      it('to return \'true\', when object path results to \'null\' or \'undefined\'',
         function () {
           data.obj1.obj2.obj3 = undefined;
           expect(utils.isNullOrUndefind(data, 'obj1', 'obj2', 'obj3')).to.be.true;
@@ -43,7 +43,7 @@ describe('Utils: tests', function () {
           expect(utils.isNullOrUndefind(data, 'obj1', 'obj2', 'obj3')).to.be.true;
         });
 
-      it('\'false\', when object path does not result to \'null\' or \'undefined\'',
+      it('to return \'false\', when object path does not result to \'null\' or \'undefined\'',
         function () {
           expect(utils.isNullOrUndefind(data, 'obj1', 'obj2', 'obj3')).to.be.false;
         });
@@ -109,9 +109,9 @@ describe('Utils: tests', function () {
         });
     });
 
-    context('function \'getFinalNewLine\' to detect', function () {
+    context('function \'getFinalNewLine\'', function () {
 
-      it('LF as the EOL',
+      it('to detect LF as the EOL',
         function () {
           const sut = utils.getFinalNewLine('text\n');
           expect(sut).to.be.an('object');
@@ -119,7 +119,7 @@ describe('Utils: tests', function () {
           expect(sut).to.have.property('type', '\n');
         });
 
-      it('CRLF as the EOL',
+      it('to detect CRLF as the EOL',
         function () {
           const sut = utils.getFinalNewLine('text\r\n');
           expect(sut).to.be.an('object');
@@ -127,7 +127,7 @@ describe('Utils: tests', function () {
           expect(sut).to.have.property('type', '\r\n');
         });
 
-      it('no EOL',
+      it('to detect no EOL',
         function () {
           const sut = utils.getFinalNewLine('text');
           expect(sut).to.be.an('object');
@@ -199,15 +199,15 @@ describe('Utils: tests', function () {
 
     });
 
-    context('function \'isValidPath\' to return', function () {
+    context('function \'isValidPath\'', function () {
 
-      it('\'true\' when provided parameter is a path',
+      it('to return \'true\' when provided parameter is a path',
         function () {
           expect(utils.isValidPath('./package.json')).to.be.true;
           expect(utils.isValidPath('package.json')).to.be.true;
         });
 
-      it('\'false\' when provided parameter is not a path',
+      it('to return \'false\' when provided parameter is not a path',
         function () {
           expect(utils.isValidPath(JSON.stringify(data))).to.be.false;
         });

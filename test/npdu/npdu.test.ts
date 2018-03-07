@@ -93,49 +93,49 @@ describe('CLI: tests', function () {
         });
     });
 
-  });
+    context('to call', function () {
 
-  context('to call', function () {
+      it('the YargsParser \'parse\' function',
+        async function () {
+          const consoleLogStub = sandbox.stub(console, 'log');
+          const stdoutStub = sandbox.stub(process.stdout, 'write');
+          await npdu();
+          expect(ypParseStub.calledOnce).to.be.true;
+          stdoutStub.restore();
+          consoleLogStub.restore();
+        });
 
-    it('the YargsParser \'parse\' function',
-      async function () {
-        const consoleLogStub = sandbox.stub(console, 'log');
-        const stdoutStub = sandbox.stub(process.stdout, 'write');
-        await npdu();
-        expect(ypParseStub.calledOnce).to.be.true;
-        stdoutStub.restore();
-        consoleLogStub.restore();
-      });
+      it('the PackageFileManager \'getDepepndencies\' function',
+        async function () {
+          const consoleLogStub = sandbox.stub(console, 'log');
+          const stdoutStub = sandbox.stub(process.stdout, 'write');
+          await npdu();
+          expect(pfmGetDepepndenciesStub.calledOnce).to.be.true;
+          stdoutStub.restore();
+          consoleLogStub.restore();
+        });
 
-    it('the PackageFileManager \'getDepepndencies\' function',
-      async function () {
-        const consoleLogStub = sandbox.stub(console, 'log');
-        const stdoutStub = sandbox.stub(process.stdout, 'write');
-        await npdu();
-        expect(pfmGetDepepndenciesStub.calledOnce).to.be.true;
-        stdoutStub.restore();
-        consoleLogStub.restore();
-      });
+      it('the PackageFileManager \'persist\' function',
+        async function () {
+          const consoleLogStub = sandbox.stub(console, 'log');
+          const stdoutStub = sandbox.stub(process.stdout, 'write');
+          await npdu();
+          expect(pfmPersistStub.calledOnce).to.be.true;
+          stdoutStub.restore();
+          consoleLogStub.restore();
+        });
 
-    it('the PackageFileManager \'persist\' function',
-      async function () {
-        const consoleLogStub = sandbox.stub(console, 'log');
-        const stdoutStub = sandbox.stub(process.stdout, 'write');
-        await npdu();
-        expect(pfmPersistStub.calledOnce).to.be.true;
-        stdoutStub.restore();
-        consoleLogStub.restore();
-      });
+      it('the VersionResolver \'resolve\' function',
+        async function () {
+          const consoleLogStub = sandbox.stub(console, 'log');
+          const stdoutStub = sandbox.stub(process.stdout, 'write');
+          await npdu();
+          expect(vrResolveStub.calledOnce).to.be.true;
+          stdoutStub.restore();
+          consoleLogStub.restore();
+        });
 
-    it('the VersionResolver \'resolve\' function',
-      async function () {
-        const consoleLogStub = sandbox.stub(console, 'log');
-        const stdoutStub = sandbox.stub(process.stdout, 'write');
-        await npdu();
-        expect(vrResolveStub.calledOnce).to.be.true;
-        stdoutStub.restore();
-        consoleLogStub.restore();
-      });
+    });
 
   });
 
