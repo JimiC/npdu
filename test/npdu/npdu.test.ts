@@ -51,6 +51,7 @@ describe('CLI: tests', function () {
 
       it('process messages',
         async function () {
+          const exitStub = sandbox.stub(process, 'exit');
           const consoleLogStub = sandbox.stub(console, 'log');
           const stdoutStub = sandbox.stub(process.stdout, 'write');
           const spinnerLogStartSpy = sandbox.spy(Logger.prototype, 'spinnerLogStart');
@@ -63,11 +64,13 @@ describe('CLI: tests', function () {
           expect(spinnerLogStopSpy.calledWith(spinnerLogStartSpy.returnValues[0], 'Dependencies updated')).to.be.true;
           stdoutStub.restore();
           consoleLogStub.restore();
+          exitStub.restore();
         });
 
       it('informative messages',
         async function () {
           pargs.logger = true;
+          const exitStub = sandbox.stub(process, 'exit');
           const consoleLogStub = sandbox.stub(console, 'log');
           const stdoutStub = sandbox.stub(process.stdout, 'write');
           const loggerLogSpy = sandbox.spy(Logger.prototype, 'log');
@@ -77,11 +80,13 @@ describe('CLI: tests', function () {
           expect(loggerUpdateLogSpy.callCount).to.equal(2);
           stdoutStub.restore();
           consoleLogStub.restore();
+          exitStub.restore();
         });
 
       it('Error messages',
         async function () {
           vrResolveStub.throws(new Error());
+          const exitStub = sandbox.stub(process, 'exit');
           const consoleLogStub = sandbox.stub(console, 'log');
           const stdoutStub = sandbox.stub(process.stdout, 'write');
           const loggerSpinnerLogStopSpy = sandbox.spy(Logger.prototype, 'spinnerLogStop');
@@ -92,6 +97,7 @@ describe('CLI: tests', function () {
           expect(loggerUpdateLogSpy.secondCall.calledWithMatch('Error: ')).to.be.true;
           stdoutStub.restore();
           consoleLogStub.restore();
+          exitStub.restore();
         });
     });
 
@@ -99,42 +105,50 @@ describe('CLI: tests', function () {
 
       it('the YargsParser \'parse\' function',
         async function () {
+          const exitStub = sandbox.stub(process, 'exit');
           const consoleLogStub = sandbox.stub(console, 'log');
           const stdoutStub = sandbox.stub(process.stdout, 'write');
           await npdu();
           expect(ypParseStub.calledOnce).to.be.true;
           stdoutStub.restore();
           consoleLogStub.restore();
+          exitStub.restore();
         });
 
       it('the PackageFileManager \'getDepepndencies\' function',
         async function () {
+          const exitStub = sandbox.stub(process, 'exit');
           const consoleLogStub = sandbox.stub(console, 'log');
           const stdoutStub = sandbox.stub(process.stdout, 'write');
           await npdu();
           expect(pfmGetDepepndenciesStub.calledOnce).to.be.true;
           stdoutStub.restore();
           consoleLogStub.restore();
+          exitStub.restore();
         });
 
       it('the PackageFileManager \'persist\' function',
         async function () {
+          const exitStub = sandbox.stub(process, 'exit');
           const consoleLogStub = sandbox.stub(console, 'log');
           const stdoutStub = sandbox.stub(process.stdout, 'write');
           await npdu();
           expect(pfmPersistStub.calledOnce).to.be.true;
           stdoutStub.restore();
           consoleLogStub.restore();
+          exitStub.restore();
         });
 
       it('the VersionResolver \'resolve\' function',
         async function () {
+          const exitStub = sandbox.stub(process, 'exit');
           const consoleLogStub = sandbox.stub(console, 'log');
           const stdoutStub = sandbox.stub(process.stdout, 'write');
           await npdu();
           expect(vrResolveStub.calledOnce).to.be.true;
           stdoutStub.restore();
           consoleLogStub.restore();
+          exitStub.restore();
         });
 
     });
@@ -143,15 +157,17 @@ describe('CLI: tests', function () {
 
       it('to call \'handleForcedExit\'',
         function () {
-          const emitter = new EventEmitter();
+          const exitStub = sandbox.stub(process, 'exit');
           const consoleLogStub = sandbox.stub(console, 'log');
           const stdoutStub = sandbox.stub(process.stdout, 'write');
           const handleForcedExitStub = sandbox.stub(Logger.prototype, 'handleForcedExit');
+          const emitter = new EventEmitter();
           sandbox.stub(readline, 'createInterface').returns(emitter);
           const promise = npdu().then(() => {
             expect(handleForcedExitStub.called).to.be.true;
             consoleLogStub.restore();
             stdoutStub.restore();
+            exitStub.restore();
           });
           emitter.emit('SIGINT');
           return promise;
