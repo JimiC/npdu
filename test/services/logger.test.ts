@@ -128,7 +128,7 @@ describe('Logger: tests', function () {
             const stub = sandbox.stub(process.stdout, 'write');
             logger.updateLog('test', 'Mocha');
             stub.restore();
-            expect(stub.calledWith('[Mocha]: test\n')).to.be.true;
+            expect(stub.calledWith('[Mocha]: test')).to.be.true;
           });
 
         context('if the terminal', function () {
@@ -181,7 +181,7 @@ describe('Logger: tests', function () {
                   const moveCursorSpy = sandbox.spy(readline, 'moveCursor');
                   logger.updateLog('test', 5, 'Mocha');
                   stub.restore();
-                  expect(stub.calledWith('[Mocha]: test\n')).to.be.true;
+                  expect(stub.calledWith('[Mocha]: test')).to.be.true;
                   expect(moveCursorSpy.calledWith(process.stdout, 0, -5)).to.be.true;
                   expect(moveCursorSpy.calledWith(process.stdout, 0, 5)).to.be.true;
                 });
@@ -381,18 +381,24 @@ describe('Logger: tests', function () {
 
           let moveCursorStub: sinon.SinonStub;
           let clearLineStub: sinon.SinonStub;
+          let cursorToStub: sinon.SinonStub;
           let updateLogStub: sinon.SinonStub;
+          let cursorShowStub: sinon.SinonStub;
 
           beforeEach(function () {
             moveCursorStub = sandbox.stub(readline, 'moveCursor');
             clearLineStub = sandbox.stub(readline, 'clearLine');
+            cursorToStub = sandbox.stub(readline, 'cursorTo');
             updateLogStub = sandbox.stub(logger, 'updateLog');
+            cursorShowStub = sandbox.stub(process.stdout, 'write');
           });
 
           afterEach(function () {
             moveCursorStub.restore();
             clearLineStub.restore();
+            cursorToStub.restore();
             updateLogStub.restore();
+            cursorShowStub.restore();
           });
 
           context('is TTY', function () {
@@ -403,15 +409,14 @@ describe('Logger: tests', function () {
                 function () {
                   process.stdout.isTTY = true;
                   const exitStub = sandbox.stub(process, 'exit');
-                  const cursorShowStub = sandbox.stub(process.stdout, 'write');
                   logger.handleForcedExit(true);
                   expect(updateLogStub.calledTwice).to.be.true;
                   expect(moveCursorStub.calledTwice).to.be.true;
+                  expect(cursorToStub.calledTwice).to.be.true;
                   expect(clearLineStub.calledThrice).to.be.true;
                   expect(exitStub.calledOnce).to.be.true;
-                  expect(cursorShowStub.calledOnce).to.be.true;
+                  expect(cursorShowStub.callCount).to.be.eq(1);
                   expect(cursorShowStub.calledWith('\u001B[?25h')).to.be.true;
-                  cursorShowStub.restore();
                   exitStub.restore();
                 });
 
@@ -423,15 +428,14 @@ describe('Logger: tests', function () {
                 function () {
                   process.stdout.isTTY = true;
                   const exitStub = sandbox.stub(process, 'exit');
-                  const cursorShowStub = sandbox.stub(process.stdout, 'write');
                   logger.handleForcedExit(false);
                   expect(updateLogStub.calledOnce).to.be.true;
                   expect(moveCursorStub.calledOnce).to.be.true;
+                  expect(cursorToStub.calledOnce).to.be.true;
                   expect(clearLineStub.calledTwice).to.be.true;
                   expect(exitStub.calledOnce).to.be.true;
-                  expect(cursorShowStub.calledOnce).to.be.true;
+                  expect(cursorShowStub.callCount).to.be.eq(1);
                   expect(cursorShowStub.calledWith('\u001B[?25h')).to.be.true;
-                  cursorShowStub.restore();
                   exitStub.restore();
                 });
 
@@ -447,15 +451,15 @@ describe('Logger: tests', function () {
                 function () {
                   process.stdout.isTTY = undefined;
                   const exitStub = sandbox.stub(process, 'exit');
-                  const cursorShowStub = sandbox.stub(process.stdout, 'write');
                   logger.handleForcedExit(true);
+                  exitStub.restore();
                   expect(updateLogStub.called).to.be.false;
                   expect(moveCursorStub.called).to.be.false;
                   expect(clearLineStub.called).to.be.false;
+                  expect(cursorToStub.called).to.be.false;
                   expect(exitStub.calledOnce).to.be.true;
+                  expect(cursorShowStub.notCalled).to.be.true;
                   expect(cursorShowStub.calledWith('\u001B[?25h')).to.be.false;
-                  cursorShowStub.restore();
-                  exitStub.restore();
                 });
 
             });
@@ -466,15 +470,16 @@ describe('Logger: tests', function () {
                 function () {
                   process.stdout.isTTY = undefined;
                   const exitStub = sandbox.stub(process, 'exit');
-                  const cursorShowStub = sandbox.stub(process.stdout, 'write');
                   logger.handleForcedExit(false);
+                  cursorShowStub.restore();
+                  exitStub.restore();
                   expect(updateLogStub.called).to.be.false;
                   expect(moveCursorStub.called).to.be.false;
                   expect(clearLineStub.called).to.be.false;
+                  expect(cursorToStub.called).to.be.false;
                   expect(exitStub.calledOnce).to.be.true;
+                  expect(cursorShowStub.notCalled).to.be.true;
                   expect(cursorShowStub.calledWith('\u001B[?25h')).to.be.false;
-                  cursorShowStub.restore();
-                  exitStub.restore();
                 });
 
             });
