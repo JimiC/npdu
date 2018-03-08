@@ -12,7 +12,7 @@ export = (async (): Promise<void> => {
   const pargs = new YargsParser(logger).parse();
   const _logger = pargs.logger ? logger : null;
   logger.eventEmitter.on('SIGINT', () => logger.handleForcedExit(!!_logger));
-  const spinner = logger.spinnerLogStart('Updating dependencies');
+  const spinner = logger.spinnerLogStart('Updating dependencies', 'npdu');
   if (_logger) { logger.log(''); }
   try {
     const pfm = new PackageFileManager(pargs.filePath, _logger);
@@ -22,10 +22,10 @@ export = (async (): Promise<void> => {
     const vr = new VersionResolver(options, rm, _logger);
     const resolvedDependencies: IPackageDependencies = await vr.resolve(dependencies);
     await pfm.persist(resolvedDependencies);
-    logger.spinnerLogStop(spinner, 'Dependencies updated');
+    logger.spinnerLogStop(spinner, 'Dependencies updated', 'npdu');
     if (_logger) { logger.updateLog(''); }
   } catch (error) {
-    logger.spinnerLogStop(spinner, 'NPDU failed to update the dependencies');
+    logger.spinnerLogStop(spinner, 'Failed to update the dependencies', 'npdu');
     logger.updateLog(`Error: ${error.message || error}`);
   } finally {
     process.exit();
