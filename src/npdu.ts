@@ -27,5 +27,7 @@ export = (async (): Promise<void> => {
   } catch (error) {
     logger.spinnerLogStop(spinner, 'NPDU failed to update the dependencies');
     logger.updateLog(`Error: ${error.message || error}`);
+  } finally {
+    process.exit();
   }
 });
