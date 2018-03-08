@@ -1,15 +1,22 @@
-import readline from 'readline';
+import { EventEmitter } from 'events';
+import readline, { ReadLine } from 'readline';
 import { BaseLogger } from '../abstractions';
 import { ISpinner } from '../interfaces';
 
 export class Logger extends BaseLogger {
 
-  public eventEmitter = readline.createInterface(process.stdin, process.stdout);
+  public eventEmitter: ReadLine;
   public frames = ['- ', '\\ ', '| ', '/ '];
   public showSpinnerInFront = true;
   public spinnerInterval = 80;
 
   private countLines = 1;
+
+  constructor() {
+    super();
+    this.eventEmitter = readline.createInterface(process.stdin, process.stdout);
+    EventEmitter.defaultMaxListeners = 35;
+  }
 
   public log(message: string, groupId?: string): void {
     process.stdout.write(`${this.getHeader(groupId)}${message}\n`);
