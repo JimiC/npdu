@@ -57,7 +57,7 @@ export class YargsParser {
       .alias('help', 'h')
       .version()
       .alias('version', 'V')
-      .check((argv: y.Arguments) => this.validate(argv))
+      .check((argv: y.Arguments) => this._validate(argv))
       .strict();
   }
 
@@ -73,7 +73,7 @@ export class YargsParser {
     };
   }
 
-  private validate(argv: y.Arguments): boolean {
+  private _validate(argv: y.Arguments): boolean {
     let errorMsg: string;
     if (!isValidUri(argv.registry)) {
       errorMsg = 'Invalid argument: \'registry\'';
