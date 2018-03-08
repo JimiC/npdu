@@ -33,18 +33,21 @@ export class Logger extends BaseLogger {
   public updateLog(message: string, groupId?: string): void;
   public updateLog(message: string, line: number, groupId?: string): void;
   public updateLog(message: string, lineOrGroupId?: number | string, groupId?: string): void {
-    const line = (typeof lineOrGroupId === 'number' && !Number.isNaN(lineOrGroupId)) ? lineOrGroupId : 1;
     groupId = (typeof lineOrGroupId === 'string' && Number.isNaN(Number.parseInt(lineOrGroupId)))
-      ? lineOrGroupId
-      : groupId;
+    ? lineOrGroupId
+    : groupId;
 
     if (!process.stdout.isTTY) {
       process.stdout.write(`${this.getHeader(groupId)}${message}\n`);
       return;
     }
+
+    const line = (typeof lineOrGroupId === 'number' && !Number.isNaN(lineOrGroupId)) ? lineOrGroupId : 1;
+    readline.cursorTo(process.stdout, 0);
     readline.moveCursor(process.stdout, 0, -line);
     readline.clearLine(process.stdout, 0);
-    process.stdout.write(`${this.getHeader(groupId)}${message}\n`);
+    process.stdout.write(`${this.getHeader(groupId)}${message}`);
+    readline.cursorTo(process.stdout, 0);
     readline.moveCursor(process.stdout, 0, line);
   }
 
@@ -64,6 +67,7 @@ export class Logger extends BaseLogger {
   public handleForcedExit(hasInfoLogging: boolean): void {
     if (!process.stdout.isTTY) { return process.exit(); }
     const moveAndClear = () => {
+      readline.cursorTo(process.stdout, 0);
       readline.moveCursor(process.stdout, 0, -1);
       readline.clearLine(process.stdout, 0);
     };
