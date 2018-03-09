@@ -23,7 +23,10 @@ export = (async (): Promise<void> => {
     const resolvedDependencies: IPackageDependencies = await vr.resolve(dependencies);
     await pfm.persist(resolvedDependencies);
     logger.spinnerLogStop(spinner, 'Dependencies updated', 'npdu');
-    if (_logger) { logger.updateLog(''); }
+    if (_logger) {
+      logger.updateLog('');
+      logger.moveCursorTo(-1);
+    }
   } catch (error) {
     logger.spinnerLogStop(spinner, 'Failed to update the dependencies', 'npdu');
     logger.updateLog(`Error: ${error.message || error}`);

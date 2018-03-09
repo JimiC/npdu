@@ -14,7 +14,7 @@ import {
   YargsParser,
 } from '../../src/services';
 
-describe('CLI: tests', function () {
+describe('NPDU: tests', function () {
 
   let sandbox: sinon.SinonSandbox;
   let pargs: IParsedArgs;
@@ -38,6 +38,8 @@ describe('CLI: tests', function () {
     pfmGetDepepndenciesStub = sandbox.stub(PackageFileManager.prototype, 'getDependencies');
     pfmPersistStub = sandbox.stub(PackageFileManager.prototype, 'persist');
     vrResolveStub = sandbox.stub(VersionResolver.prototype, 'resolve');
+    process.stdout.setMaxListeners(Infinity);
+    process.stdin.setMaxListeners(Infinity);
   });
 
   afterEach(function () {
@@ -57,14 +59,14 @@ describe('CLI: tests', function () {
           const spinnerLogStartSpy = sandbox.spy(Logger.prototype, 'spinnerLogStart');
           const spinnerLogStopSpy = sandbox.spy(Logger.prototype, 'spinnerLogStop');
           await npdu();
+          stdoutStub.restore();
+          consoleLogStub.restore();
+          exitStub.restore();
           expect(spinnerLogStopSpy.calledOnce).to.be.true;
           expect(spinnerLogStopSpy.calledOnce).to.be.true;
           expect(spinnerLogStartSpy.calledBefore(spinnerLogStopSpy)).to.be.true;
           expect(spinnerLogStartSpy.calledWith('Updating dependencies')).to.be.true;
           expect(spinnerLogStopSpy.calledWith(spinnerLogStartSpy.returnValues[0], 'Dependencies updated')).to.be.true;
-          stdoutStub.restore();
-          consoleLogStub.restore();
-          exitStub.restore();
         });
 
       it('informative messages',
@@ -76,11 +78,11 @@ describe('CLI: tests', function () {
           const loggerLogSpy = sandbox.spy(Logger.prototype, 'log');
           const loggerUpdateLogSpy = sandbox.spy(Logger.prototype, 'updateLog');
           await npdu();
-          expect(loggerLogSpy.calledTwice).to.be.true;
-          expect(loggerUpdateLogSpy.callCount).to.equal(2);
           stdoutStub.restore();
           consoleLogStub.restore();
           exitStub.restore();
+          expect(loggerLogSpy.calledTwice).to.be.true;
+          expect(loggerUpdateLogSpy.callCount).to.equal(2);
         });
 
       it('Error messages',
@@ -92,12 +94,12 @@ describe('CLI: tests', function () {
           const loggerSpinnerLogStopSpy = sandbox.spy(Logger.prototype, 'spinnerLogStop');
           const loggerUpdateLogSpy = sandbox.spy(Logger.prototype, 'updateLog');
           await npdu();
-          expect(loggerSpinnerLogStopSpy.calledOnce).to.be.true;
-          expect(loggerUpdateLogSpy.calledTwice).to.be.true;
-          expect(loggerUpdateLogSpy.secondCall.calledWithMatch('Error: ')).to.be.true;
           stdoutStub.restore();
           consoleLogStub.restore();
           exitStub.restore();
+          expect(loggerSpinnerLogStopSpy.calledOnce).to.be.true;
+          expect(loggerUpdateLogSpy.callCount).to.equal(2);
+          expect(loggerUpdateLogSpy.secondCall.calledWithMatch('Error: ')).to.be.true;
         });
     });
 
@@ -109,10 +111,10 @@ describe('CLI: tests', function () {
           const consoleLogStub = sandbox.stub(console, 'log');
           const stdoutStub = sandbox.stub(process.stdout, 'write');
           await npdu();
-          expect(ypParseStub.calledOnce).to.be.true;
           stdoutStub.restore();
           consoleLogStub.restore();
           exitStub.restore();
+          expect(ypParseStub.calledOnce).to.be.true;
         });
 
       it('the PackageFileManager \'getDepepndencies\' function',
@@ -121,10 +123,10 @@ describe('CLI: tests', function () {
           const consoleLogStub = sandbox.stub(console, 'log');
           const stdoutStub = sandbox.stub(process.stdout, 'write');
           await npdu();
-          expect(pfmGetDepepndenciesStub.calledOnce).to.be.true;
           stdoutStub.restore();
           consoleLogStub.restore();
           exitStub.restore();
+          expect(pfmGetDepepndenciesStub.calledOnce).to.be.true;
         });
 
       it('the PackageFileManager \'persist\' function',
@@ -133,10 +135,10 @@ describe('CLI: tests', function () {
           const consoleLogStub = sandbox.stub(console, 'log');
           const stdoutStub = sandbox.stub(process.stdout, 'write');
           await npdu();
-          expect(pfmPersistStub.calledOnce).to.be.true;
           stdoutStub.restore();
           consoleLogStub.restore();
           exitStub.restore();
+          expect(pfmPersistStub.calledOnce).to.be.true;
         });
 
       it('the VersionResolver \'resolve\' function',
@@ -145,10 +147,10 @@ describe('CLI: tests', function () {
           const consoleLogStub = sandbox.stub(console, 'log');
           const stdoutStub = sandbox.stub(process.stdout, 'write');
           await npdu();
-          expect(vrResolveStub.calledOnce).to.be.true;
           stdoutStub.restore();
           consoleLogStub.restore();
           exitStub.restore();
+          expect(vrResolveStub.calledOnce).to.be.true;
         });
 
     });
@@ -164,10 +166,10 @@ describe('CLI: tests', function () {
           const emitter = new EventEmitter();
           sandbox.stub(readline, 'createInterface').returns(emitter);
           const promise = npdu().then(() => {
-            expect(handleForcedExitStub.called).to.be.true;
             consoleLogStub.restore();
             stdoutStub.restore();
             exitStub.restore();
+            expect(handleForcedExitStub.called).to.be.true;
           });
           emitter.emit('SIGINT');
           return promise;
