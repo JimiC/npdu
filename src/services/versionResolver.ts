@@ -26,13 +26,15 @@ export class VersionResolver extends BaseVersionResolver {
         this._logger.updateLog(`Resolving version of package: '${packageName}'`);
       }
       const currentVersion = packages[packageName];
+      if (!this._getValidVersion(currentVersion)) { continue; }
       const newVersion = await this._findNewVersion(packageName, this._options.strategy, currentVersion);
       if (newVersion) {
         if (currentVersion !== newVersion) {
           const depends = this._getDependenciesOfPackage(dependencies, packageName);
           depends[packageName] = newVersion;
           if (this._logger) {
-            this._logger.updateLog(`Found new version: '${newVersion}' for package: '${packageName}'`);
+            this._logger
+              .updateLog(`Found new version: '${this._getValidVersion(newVersion)}' for package: '${packageName}'`);
           }
         } else {
           if (this._logger) {
@@ -50,6 +52,10 @@ export class VersionResolver extends BaseVersionResolver {
       .reduce((p: IDependencies, c: IDependencies) => ({ ...p, ...c }), {});
   }
 
+  private _getValidVersion(version: string | semver.SemVer): string {
+    return semver.valid(semver.coerce(version));
+  }
+
   private async _findNewVersion(packageName: string, strategy: string, currentVersion: string): Promise<string> {
     const info: INodePackage = await this._registryManager.getPackageInfo(packageName);
     if (!info || !Reflect.ownKeys(info).length) {
@@ -65,21 +71,30 @@ export class VersionResolver extends BaseVersionResolver {
     switch (Strategy[strategy]) {
       case Strategy.latest:
         return info['dist-tags']
-          ? this._getRange(info['dist-tags'].latest, currentVersion)
+          ? this._replaceVersion(info['dist-tags'].latest, currentVersion)
           : currentVersion;
       case Strategy.semver:
+        // currentVersion = '7.0.0 - 9';
+        // const range = new semver.Range(currentVersion);
+        // console.dir(range);
         const newVersion = this._getMaxSatisfiedVersion(info, currentVersion);
-        return this._getRange(newVersion, currentVersion);
+        // console.dir(newVersion);
+        return this._replaceVersion(newVersion, currentVersion);
       default:
         throw new Error('Not Implemented (:getVersionFromStrategy:)');
     }
   }
 
-  private _getRange(newVersion: string, currentVersion: string): string {
-    if (!newVersion || newVersion === currentVersion) { return currentVersion; }
+  private _replaceVersion(newVersion: string, currentVersion: string): string {
+    if (!newVersion || newVersion === this._getValidVersion(currentVersion)) {
+      return this._options.keepRange
+        ? currentVersion
+        : this._getValidVersion(currentVersion);
+    }
     if (!this._options.keepRange) { return newVersion; }
+
     // TODO: Implement other range cases
-    return currentVersion.replace(/[0-9.]+-*[a-zA-Z0-9]*/g, newVersion);
+    return currentVersion.replace(/[0-9.]+-*[a-zA-Z0-9]*/, newVersion);
   }
 
   private _getMaxSatisfiedVersion(info: INodePackage, range: string): string {

@@ -10,6 +10,11 @@ module.exports = (wallaby) => ({
   filesWithNoCoverageCalculated: [
     "src/cli.ts"
   ],
+  preprocessors: {
+    '**/test/fixtures/*.json': (file, done) => {
+      done(file.rename(`../${file.path}`).content)
+    }
+  },
   hints: {
     ignoreCoverage: /\/* wallaby ignore next\/*/
   },
