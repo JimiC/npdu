@@ -16,7 +16,9 @@ module.exports = (wallaby) => ({
   testFramework: "mocha",
   env: {
     type: "node",
-    runner: `${require('os').homedir()}/.nvm/versions/node/v6.13.0/bin/node`
+    runner: process.platform === 'win32'
+      ? `${process.env.APPDATA}\\nvm\\v6.13.0\\node`
+      : `${require('os').homedir()}/.nvm/versions/node/v6.13.0/bin/node`
   },
   delays: {
     run: 500
