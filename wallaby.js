@@ -1,4 +1,4 @@
-module.exports = (wallaby) => ({
+module.exports = {
   files: [
     "src/**/*.ts",
     "test/fixtures/*.json",
@@ -11,9 +11,7 @@ module.exports = (wallaby) => ({
     "src/cli.ts"
   ],
   preprocessors: {
-    '**/test/fixtures/*.json': (file, done) => {
-      done(file.rename(`../${file.path}`).content)
-    }
+    "**/test/fixtures/*.json": (file, done) => done(file.rename(`../${file.path}`).content)
   },
   hints: {
     ignoreCoverage: /\/* wallaby ignore next\/*/
@@ -21,14 +19,12 @@ module.exports = (wallaby) => ({
   testFramework: "mocha",
   env: {
     type: "node",
-    runner: process.platform === 'win32'
-      ? `${process.env.APPDATA}\\nvm\\v6.13.0\\node`
-      : `${require('os').homedir()}/.nvm/versions/node/v6.13.0/bin/node`
+    runner: process.platform === "win32" ? `${process.env.APPDATA}\\nvm\\v6.13.0\\node` : `${require('os').homedir()}/.nvm/versions/node/v6.13.0/bin/node`
   },
   delays: {
     run: 500
   },
   debug: true,
   reportConsoleErrorAsError: true,
-  setup: (wallaby) => wallaby.testFramework.ui('bdd')
-});
+  setup: (wallaby) => wallaby.testFramework.ui("bdd")
+};
