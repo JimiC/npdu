@@ -96,6 +96,7 @@ export class Logger extends BaseLogger {
         : `${this.getHeader(groupId)}${message}${frame}`;
       this.updateLog(msg, this._countLines - line);
     };
+    iteration()
     return setInterval(iteration, this.spinnerInterval);
   }
 
