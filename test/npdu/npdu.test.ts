@@ -22,6 +22,7 @@ describe('NPDU: tests', function () {
   let pfmGetDepepndenciesStub: sinon.SinonStub;
   let pfmPersistStub: sinon.SinonStub;
   let vrResolveStub: sinon.SinonStub;
+  let isTTY: true | undefined;
 
   beforeEach(function () {
     pargs = {
@@ -38,12 +39,14 @@ describe('NPDU: tests', function () {
     pfmGetDepepndenciesStub = sandbox.stub(PackageFileManager.prototype, 'getDependencies');
     pfmPersistStub = sandbox.stub(PackageFileManager.prototype, 'persist');
     vrResolveStub = sandbox.stub(VersionResolver.prototype, 'resolve');
+    isTTY = process.stdout.isTTY;
     process.stdout.setMaxListeners(Infinity);
     process.stdin.setMaxListeners(Infinity);
   });
 
   afterEach(function () {
     pargs = null;
+    process.stdout.isTTY = isTTY;
     sandbox.restore();
   });
 
@@ -71,6 +74,7 @@ describe('NPDU: tests', function () {
 
       it('informative messages',
         async function () {
+          process.stdout.isTTY = true;
           pargs.logger = true;
           const exitStub = sandbox.stub(process, 'exit');
           const consoleLogStub = sandbox.stub(console, 'log');
@@ -82,11 +86,12 @@ describe('NPDU: tests', function () {
           consoleLogStub.restore();
           exitStub.restore();
           expect(loggerLogSpy.calledTwice).to.be.true;
-          expect(loggerUpdateLogSpy.callCount).to.equal(2);
+          expect(loggerUpdateLogSpy.callCount).to.equal(3);
         });
 
       it('Error messages',
         async function () {
+          process.stdout.isTTY = true;
           vrResolveStub.throws(new Error());
           const exitStub = sandbox.stub(process, 'exit');
           const consoleLogStub = sandbox.stub(console, 'log');
@@ -98,8 +103,8 @@ describe('NPDU: tests', function () {
           consoleLogStub.restore();
           exitStub.restore();
           expect(loggerSpinnerLogStopSpy.calledOnce).to.be.true;
-          expect(loggerUpdateLogSpy.callCount).to.equal(2);
-          expect(loggerUpdateLogSpy.secondCall.calledWithMatch(/Error: /)).to.be.true;
+          expect(loggerUpdateLogSpy.callCount).to.equal(3);
+          expect(loggerUpdateLogSpy.thirdCall.calledWithMatch(/Error: /)).to.be.true;
         });
 
     });
