@@ -249,7 +249,7 @@ describe('Logger: tests', function () {
                   timer.tick(logger.spinnerInterval);
                   clearInterval(spinner.timer);
                   writeStub.restore();
-                  expect(updateLogSpy.calledOnce).to.be.true;
+                  expect(updateLogSpy.callCount).to.equal(2);
                   expect(updateLogSpy.calledWith('\\ test', 1)).to.be.true;
                   expect(updateLogSpy.calledAfter(logSpy)).to.be.true;
                   expect(logSpy.calledOnce).to.be.true;
@@ -267,7 +267,7 @@ describe('Logger: tests', function () {
                   timer.tick(logger.spinnerInterval);
                   clearInterval(spinner.timer);
                   writeStub.restore();
-                  expect(updateLogSpy.calledOnce).to.be.true;
+                  expect(updateLogSpy.callCount).to.equal(2);
                   expect(updateLogSpy.calledWith('[Mocha]: \\ test', 1)).to.be.true;
                   expect(updateLogSpy.calledAfter(logSpy)).to.be.true;
                   expect(logSpy.calledOnce).to.be.true;
@@ -286,7 +286,7 @@ describe('Logger: tests', function () {
                   timer.tick(logger.spinnerInterval);
                   clearInterval(spinner.timer);
                   writeStub.restore();
-                  expect(updateLogSpy.calledOnce).to.be.true;
+                  expect(updateLogSpy.callCount).to.equal(2);
                   expect(updateLogSpy.calledWith('test\\ ', 1)).to.be.true;
                   expect(updateLogSpy.calledAfter(logSpy)).to.be.true;
                   expect(logSpy.calledOnce).to.be.true;
@@ -305,7 +305,7 @@ describe('Logger: tests', function () {
                   timer.tick(logger.spinnerInterval);
                   clearInterval(spinner.timer);
                   writeStub.restore();
-                  expect(updateLogSpy.calledOnce).to.be.true;
+                  expect(updateLogSpy.callCount).to.equal(2);
                   expect(updateLogSpy.calledWith('[Mocha]: test\\ ', 1)).to.be.true;
                   expect(updateLogSpy.calledAfter(logSpy)).to.be.true;
                   expect(logSpy.calledOnce).to.be.true;
@@ -354,8 +354,8 @@ describe('Logger: tests', function () {
                 timer.tick(logger.spinnerInterval);
                 logger.spinnerLogStop(spinner, 'test end');
                 writeStub.restore();
-                expect(updateLogSpy.calledTwice).to.be.true;
-                expect(updateLogSpy.secondCall.calledWith('test end', 1)).to.be.true;
+                expect(updateLogSpy.callCount).to.equal(3);
+                expect(updateLogSpy.thirdCall.calledWith('test end', 1)).to.be.true;
                 expect(writeStub.calledWith('\u001B[?25h')).to.be.true;
               });
 
@@ -368,8 +368,8 @@ describe('Logger: tests', function () {
                 timer.tick(logger.spinnerInterval);
                 logger.spinnerLogStop(spinner, 'test end', 'Mocha');
                 writeStub.restore();
-                expect(updateLogSpy.calledTwice).to.be.true;
-                expect(updateLogSpy.secondCall.calledWith('test end', 1, 'Mocha')).to.be.true;
+                expect(updateLogSpy.callCount).to.equal(3);
+                expect(updateLogSpy.thirdCall.calledWith('test end', 1, 'Mocha')).to.be.true;
                 expect(writeStub.calledWith('\u001B[?25h')).to.be.true;
               });
 

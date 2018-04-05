@@ -3,7 +3,7 @@
 import { expect } from 'chai';
 import { EventEmitter } from 'events';
 import readline from 'readline';
-import sinon from 'sinon';
+import * as sinon from 'sinon';
 import { IParsedArgs } from '../../src/interfaces';
 import npdu from '../../src/npdu';
 import {
@@ -49,7 +49,7 @@ describe('NPDU: tests', function () {
 
   context('expects', function () {
 
-    context('to log ', function () {
+    context('to log', function () {
 
       it('process messages',
         async function () {
@@ -99,8 +99,9 @@ describe('NPDU: tests', function () {
           exitStub.restore();
           expect(loggerSpinnerLogStopSpy.calledOnce).to.be.true;
           expect(loggerUpdateLogSpy.callCount).to.equal(2);
-          expect(loggerUpdateLogSpy.secondCall.calledWithMatch('Error: ')).to.be.true;
+          expect(loggerUpdateLogSpy.secondCall.calledWithMatch(/Error: /)).to.be.true;
         });
+
     });
 
     context('to call', function () {

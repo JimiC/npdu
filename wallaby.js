@@ -19,7 +19,7 @@ module.exports = {
   testFramework: "mocha",
   env: {
     type: "node",
-    runner: process.platform === "win32" ? `${process.env.APPDATA}\\nvm\\v6.13.0\\node` : `${require('os').homedir()}/.nvm/versions/node/v6.13.0/bin/node`
+    runner: process.platform === "win32" ? `${process.env.APPDATA}\\nvm\\v6.14.1\\node` : `${require('os').homedir()}/.nvm/versions/node/v6.14.1/bin/node`
   },
   delays: {
     run: 500
